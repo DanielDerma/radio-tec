@@ -89,12 +89,24 @@ export function AudioProvider({ children }) {
         {children}
       </AudioPlayerContext.Provider>
       <audio
-        autoPlay="wCdZKQXZHGBIuMqykoAwBLvTJhqRceQL2IRLOqVkNXdOHJDt1qslBqwshXZSKZIqb5yLr1BUu1teJcku1S1keWVammPOwjdkiHNdOl"
-        controls="controls"
+        ref={playerRef}
+        onPlay={() => dispatch({ type: 'PLAY' })}
+        onPause={() => dispatch({ type: 'PAUSE' })}
+        onTimeUpdate={(event) => {
+          dispatch({
+            type: 'SET_CURRENT_TIME',
+            payload: Math.floor(event.target.currentTime),
+          })
+        }}
+        onDurationChange={(event) => {
+          dispatch({
+            type: 'SET_DURATION',
+            payload: Math.floor(event.target.duration),
+          })
+        }}
         className="hidden"
-      >
-        <source src="http://radiotec.delicias.tecnm.mx:8000/live" />
-      </audio>
+        muted={state.muted}
+      />
     </>
   )
 }
@@ -118,3 +130,11 @@ export function useAudioPlayer(data) {
     [player, data]
   )
 }
+
+{/* <audio
+        autoPlay="wCdZKQXZHGBIuMqykoAwBLvTJhqRceQL2IRLOqVkNXdOHJDt1qslBqwshXZSKZIqb5yLr1BUu1teJcku1S1keWVammPOwjdkiHNdOl"
+        controls="controls"
+        className="hidden"
+      >
+        <source src="http://radiotec.delicias.tecnm.mx:8000/live" />
+      </audio> */}
