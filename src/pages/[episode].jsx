@@ -64,7 +64,7 @@ export default function Episode({ episode }) {
   )
 }
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps() {
   let feed = await parse('https://their-side-feed.vercel.app/api/feed')
   let episode = feed.items
     .map(({ id, title, description, content, enclosures, published }) => ({
@@ -78,7 +78,7 @@ export async function getStaticProps({ params }) {
         type: enclosure.type,
       }))[0],
     }))
-    .find(({ id }) => id === params.episode)
+    .find(({ id }) => id === '5')
 
   if (!episode) {
     return {
@@ -90,19 +90,5 @@ export async function getStaticProps({ params }) {
     props: {
       episode,
     },
-    revalidate: 10,
-  }
-}
-
-export async function getStaticPaths() {
-  let feed = await parse('https://their-side-feed.vercel.app/api/feed')
-
-  return {
-    paths: feed.items.map(({ id }) => ({
-      params: {
-        episode: id.toString(),
-      },
-    })),
-    fallback: 'blocking',
   }
 }

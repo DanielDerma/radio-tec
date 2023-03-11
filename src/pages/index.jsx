@@ -1,41 +1,12 @@
 import { useMemo } from 'react'
 import Head from 'next/head'
-import Link from 'next/link'
 import { parse } from 'rss-to-json'
 
 import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
+import { PlayButton } from '@/components/player/PlayButton'
 
-export default function Home({ episodes }) {
-  return (
-    <>
-      <Head>
-        <title>
-          Their Side - Conversations with the most tragically misunderstood
-          people of our time
-        </title>
-        <meta
-          name="description"
-          content="Conversations with the most tragically misunderstood people of our time."
-        />
-      </Head>
-      <div className="pt-16 pb-12 sm:pb-4 lg:pt-12">
-        <Container>
-          <h1 className="text-2xl font-bold leading-7 text-slate-900">
-            Episodes
-          </h1>
-        </Container>
-        <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 lg:border-t lg:border-slate-100">
-          {episodes.map((episode) => (
-            <EpisodeEntry key={episode.id} episode={episode} />
-          ))}
-        </div>
-      </div>
-    </>
-  )
-}
-
-function EpisodeEntry({ episode }) {
+export default function EpisodeEntry({ episode }) {
   let date = new Date(episode.published)
 
   let audioPlayerData = useMemo(
@@ -52,100 +23,72 @@ function EpisodeEntry({ episode }) {
   let player = useAudioPlayer(audioPlayerData)
 
   return (
-    <article
-      aria-labelledby={`episode-${episode.id}-title`}
-      className="py-10 sm:py-12"
-    >
-      <Container>
-        <div className="flex flex-col items-start">
-          <h2
-            id={`episode-${episode.id}-title`}
-            className="mt-2 text-lg font-bold text-slate-900"
-          >
-            <Link href={`/${episode.id}`}>
-              <a>{episode.title}</a>
-            </Link>
-          </h2>
-          <time
-            dateTime={date.toISOString()}
-            className="-order-1 font-mono text-sm leading-7 text-slate-500"
-          >
-            {new Intl.DateTimeFormat('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }).format(date)}
-          </time>
-          <p className="mt-1 text-base leading-7 text-slate-700">
-            {episode.description}
-          </p>
-          <div className="mt-4 flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => player.toggle()}
-              className="flex items-center text-sm font-bold leading-6 text-pink-500 hover:text-pink-700 active:text-pink-900"
-            >
-              <span className="sr-only">
-                {player.playing ? 'Pause' : 'Play'}
-                episode {episode.title}
-              </span>
-              <svg
-                className="h-2.5 w-2.5 fill-current"
-                viewBox="0 0 10 10"
-                fill="none"
-                aria-hidden="true"
-              >
-                {player.playing ? (
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M1.496 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5H2.68a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H1.496Zm5.82 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5H8.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H7.316Z"
-                  />
-                ) : (
-                  <path d="M8.25 4.567a.5.5 0 0 1 0 .866l-7.5 4.33A.5.5 0 0 1 0 9.33V.67A.5.5 0 0 1 .75.237l7.5 4.33Z" />
-                )}
-              </svg>
-
-              <span className="ml-3" aria-hidden="true">
-                Listen
-              </span>
-            </button>
-            <span
-              aria-hidden="true"
-              className="text-sm font-bold text-slate-400"
-            >
-              /
-            </span>
-            <Link href={`/${episode.id}`}>
-              <a className="flex items-center text-sm font-bold leading-6 text-pink-500 hover:text-pink-700 active:text-pink-900">
-                Show notes
-              </a>
-            </Link>
-          </div>
-        </div>
-      </Container>
-    </article>
+    <>
+      <Head>
+        <title>{episode.title} - Their Side</title>
+        <meta name="description" content={episode.description} />
+      </Head>
+      <article className="py-16 lg:py-36">
+        <Container>
+          <header className="flex flex-col">
+            <div className="flex items-center gap-6">
+              <PlayButton player={player} size="large" />
+              <div className="flex flex-col">
+                <h1 className="mt-2 text-4xl font-bold text-slate-900">
+                  {episode.title}
+                </h1>
+                <time
+                  dateTime={date.toISOString()}
+                  className="-order-1 font-mono text-sm leading-7 text-slate-500"
+                >
+                  {new Intl.DateTimeFormat('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }).format(date)}
+                </time>
+              </div>
+            </div>
+            <p className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700">
+              {episode.description}
+            </p>
+          </header>
+          <hr className="my-12 border-gray-200" />
+          <div
+            className="prose prose-slate mt-14 [&>h2]:mt-12 [&>h2]:flex [&>h2]:items-center [&>h2]:font-mono [&>h2]:text-sm [&>h2]:font-medium [&>h2]:leading-7 [&>h2]:text-slate-900 [&>h2]:before:mr-3 [&>h2]:before:h-3 [&>h2]:before:w-1.5 [&>h2]:before:rounded-r-full [&>h2]:before:bg-cyan-200 [&>ul]:mt-6 [&>ul]:list-['\2013\20'] [&>ul]:pl-5 [&>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>h2:nth-of-type(3n)]:before:bg-violet-200"
+            dangerouslySetInnerHTML={{ __html: episode.content }}
+          />
+        </Container>
+      </article>
+    </>
   )
 }
 
-export async function getStaticProps() {
-  const feed = await parse('https://their-side-feed.vercel.app/api/feed')
+export async function getServerSideProps() {
+  let feed = await parse('https://their-side-feed.vercel.app/api/feed')
+  let episode = feed.items
+    .map(({ id, title, description, content, enclosures, published }) => ({
+      id: id.toString(),
+      title: `${id}: ${title}`,
+      description,
+      content,
+      published,
+      audio: enclosures.map((enclosure) => ({
+        src: enclosure.url,
+        type: enclosure.type,
+      }))[0],
+    }))
+    .find(({ id }) => id === '5')
+
+  if (!episode) {
+    return {
+      notFound: true,
+    }
+  }
 
   return {
     props: {
-      episodes: feed.items.map(
-        ({ id, title, description, enclosures, published }) => ({
-          id,
-          title: `${id}: ${title}`,
-          published,
-          description,
-          audio: enclosures.map((enclosure) => ({
-            src: enclosure.url,
-            type: enclosure.type,
-          }))[0],
-        })
-      ),
+      episode,
     },
-    revalidate: 10,
   }
 }
