@@ -44,7 +44,7 @@ export function AudioPlayer() {
         <PlayButton player={player} size="medium" />
       </div>
       <div className="mb-[env(safe-area-inset-bottom)] flex flex-1 flex-col gap-3 overflow-hidden p-1">
-        <Link href={player.meta.link}>
+        <Link href={player.meta.link} legacyBehavior>
           <a
             className="truncate text-center text-sm font-bold leading-6 md:text-left"
             title={player.meta.title}
