@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
 import Head from 'next/head'
+import { useMemo } from 'react'
 import { parse } from 'rss-to-json'
 
 import { useAudioPlayer } from '@/components/AudioProvider'
@@ -7,28 +7,34 @@ import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
 import Edit from '@/icons/Edit'
 import { db } from '@/src/services/firebase'
+import { useSession } from 'next-auth/react'
 
-export default function EpisodeEntry({ episode }) {
+export default function EpisodeEntry({ episode, data }) {
   let date = new Date()
+
+  const { status } = useSession()
+  const isSignedIn = status === 'authenticated'
 
   let audioPlayerData = useMemo(
     () => ({
-      title: episode.title,
+      title: data.title,
       audio: {
         src: episode.audio.src,
         type: episode.audio.type,
       },
       link: `/${episode.id}`,
     }),
-    [episode]
+    [episode] // eslint-disable-line react-hooks/exhaustive-deps
   )
   let player = useAudioPlayer(audioPlayerData)
+
+  const handleEdit = async () => {}
 
   return (
     <>
       <Head>
-        <title>{episode.title} - Their Side</title>
-        <meta name="description" content={episode.description} />
+        <title>{data.title} - Their Side</title>
+        <meta name="description" content={data.description} />
       </Head>
       <article className="py-16 lg:py-36">
         <Container>
@@ -38,9 +44,15 @@ export default function EpisodeEntry({ episode }) {
               <div className="flex flex-col">
                 <div className="group relative">
                   <h1 className="mt-2  text-4xl font-bold text-slate-900">
-                    {episode.title}
+                    {data.title}
                   </h1>
-                  <Edit className="absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer group-hover:block" />
+                  <button onClick={handleEdit}>
+                    <Edit
+                      className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                        isSignedIn && 'group-hover:block'
+                      }`}
+                    />
+                  </button>
                 </div>
                 <time
                   dateTime={date.toISOString()}
@@ -56,9 +68,13 @@ export default function EpisodeEntry({ episode }) {
             </div>
             <div className="group relative">
               <p className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700">
-                {episode.description}
+                {data.description}
               </p>
-              <Edit className="absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer group-hover:block" />
+              <Edit
+                className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                  isSignedIn && 'group-hover:block'
+                }`}
+              />
             </div>
           </header>
           <hr className="my-12 border-gray-200" />
@@ -71,7 +87,11 @@ export default function EpisodeEntry({ episode }) {
               <h2 id="topics" className="">
                 Topicsasdf
               </h2>
-              <Edit className="absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer group-hover:block " />
+              <Edit
+                className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                  isSignedIn && 'group-hover:block'
+                }`}
+              />
             </div>
             <div className="group relative">
               <ul>
@@ -92,7 +112,11 @@ export default function EpisodeEntry({ episode }) {
                 <li>The backstory behind how Bill purchased his Porsche 911</li>
                 <li>The real reason he needed the red stapler for himself</li>
               </ul>
-              <Edit className="absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer group-hover:block " />
+              <Edit
+                className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                  isSignedIn && 'group-hover:block'
+                }`}
+              />
             </div>
           </div>
         </Container>
@@ -102,9 +126,9 @@ export default function EpisodeEntry({ episode }) {
 }
 
 export async function getServerSideProps() {
-  const data = db.collection('main').doc('home')
-  const doc = await data.get()
-  console.log(doc.data())
+  const ref = db.collection('main').doc('home')
+  const doc = await ref.get()
+  const data = doc.data()
   let feed = await parse('https://their-side-feed.vercel.app/api/feed')
   let episode = feed.items
     .map(({ id, title, description, content, enclosures, published }) => ({
@@ -126,9 +150,12 @@ export async function getServerSideProps() {
     }
   }
 
+  console.log(data)
+
   return {
     props: {
       episode,
+      data,
     },
   }
 }
