@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { parse } from 'rss-to-json'
 
 import { useAudioPlayer } from '@/components/AudioProvider'
@@ -15,6 +15,9 @@ export default function EpisodeEntry({ episode, data }) {
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
 
+  const refTitle = useRef(null)
+  const refDescription = useRef(null)
+
   let audioPlayerData = useMemo(
     () => ({
       title: data.title,
@@ -28,12 +31,18 @@ export default function EpisodeEntry({ episode, data }) {
   )
   let player = useAudioPlayer(audioPlayerData)
 
-  const handleEdit = async () => {}
+  const handleEditTitle = async () => {
+    refTitle.current.contentEditable = true
+  }
+
+  const handleEditDescripcion = async () => {
+    refDescription.current.contentEditable = true
+  }
 
   return (
     <>
       <Head>
-        <title>{data.title} - Their Side</title>
+        <title>RADIO TEC HALCONES - {data.title}</title>
         <meta name="description" content={data.description} />
       </Head>
       <article className="py-16 lg:py-36">
@@ -43,10 +52,13 @@ export default function EpisodeEntry({ episode, data }) {
               <PlayButton player={player} size="large" />
               <div className="flex flex-col">
                 <div className="group relative">
-                  <h1 className="mt-2  text-4xl font-bold text-slate-900">
+                  <h1
+                    className="mt-2  text-4xl font-bold text-slate-900"
+                    ref={refTitle}
+                  >
                     {data.title}
                   </h1>
-                  <button onClick={handleEdit}>
+                  <button onClick={handleEditTitle}>
                     <Edit
                       className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
                         isSignedIn && 'group-hover:block'
@@ -67,14 +79,19 @@ export default function EpisodeEntry({ episode, data }) {
               </div>
             </div>
             <div className="group relative">
-              <p className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700">
+              <p
+                className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700"
+                ref={refDescription}
+              >
                 {data.description}
               </p>
-              <Edit
-                className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
-                  isSignedIn && 'group-hover:block'
-                }`}
-              />
+              <button onClick={handleEditDescripcion}>
+                <Edit
+                  className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                    isSignedIn && 'group-hover:block'
+                  }`}
+                />
+              </button>
             </div>
           </header>
           <hr className="my-12 border-gray-200" />
@@ -82,16 +99,11 @@ export default function EpisodeEntry({ episode, data }) {
             className="prose prose-slate mt-14 [&>h2]:mt-12 [&>h2]:flex [&>h2]:items-center [&>h2]:font-mono [&>h2]:text-sm [&>h2]:font-medium [&>h2]:leading-7 [&>h2]:text-slate-900 [&>h2]:before:mr-3 [&>h2]:before:h-3 [&>h2]:before:w-1.5 [&>h2]:before:rounded-r-full [&>h2]:before:bg-cyan-200 [&>ul]:mt-6 [&>ul]:list-['\2013\20'] [&>ul]:pl-5 [&>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>h2:nth-of-type(3n)]:before:bg-violet-200"
             dangerouslySetInnerHTML={{ __html: episode.content }}
           /> */}
-          <div className="prose prose-slate mt-14 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-cyan-200 [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200">
-            <div className="group relative w-max">
+          <div className="prose prose-slate mt-14 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-primary [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200">
+            <div className="">
               <h2 id="topics" className="">
-                Topicsasdf
+                Temas
               </h2>
-              <Edit
-                className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
-                  isSignedIn && 'group-hover:block'
-                }`}
-              />
             </div>
             <div className="group relative">
               <ul>
