@@ -144,7 +144,6 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      episode,
       data,
     },
   }
