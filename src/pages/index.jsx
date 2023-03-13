@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { parse } from 'rss-to-json'
 
 import { useAudioPlayer } from '@/components/AudioProvider'
@@ -10,7 +10,11 @@ import { useSession } from 'next-auth/react'
 import { db } from '@/src/services/firebase'
 
 export default function EpisodeEntry({ data }) {
-  let date = new Date()
+  const [date, setDate] = useState('')
+
+  useEffect(() => {
+    setDate(new Date())
+  }, [])
 
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
@@ -31,11 +35,21 @@ export default function EpisodeEntry({ data }) {
   )
   let player = useAudioPlayer(audioPlayerData)
 
-  const handleEditTitle = async () => {
+  const handleEditTitle = () => {
     refTitle.current.contentEditable = true
+    // const range = document.createRange()
+    // range.selectNodeContents(refTitle.current)
+    // const selection = window.getSelection()
+    // selection.removeAllRanges()
+    // selection.addRange(range)
   }
 
-  const handleEditDescripcion = async () => {
+  const handleEditTitleBlur = () => {
+    console.log('hi')
+    // refTitle.current.contentEditable = false
+  }
+
+  const handleEditDescripcion = () => {
     refDescription.current.contentEditable = true
   }
 
@@ -58,7 +72,10 @@ export default function EpisodeEntry({ data }) {
                   >
                     {data.title}
                   </h1>
-                  <button onClick={handleEditTitle}>
+                  <button
+                    onClick={handleEditTitle}
+                    onBlur={handleEditTitleBlur}
+                  >
                     <Edit
                       className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
                         isSignedIn && 'group-hover:block'
@@ -67,7 +84,7 @@ export default function EpisodeEntry({ data }) {
                   </button>
                 </div>
                 <time
-                  dateTime={date.toISOString()}
+                  dateTime={date}
                   className="-order-1 font-mono text-sm leading-7 text-slate-500"
                 >
                   {new Intl.DateTimeFormat('es-ES', {
