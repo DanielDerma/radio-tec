@@ -11,6 +11,10 @@ import { useSession } from 'next-auth/react'
 
 export default function EpisodeEntry({ episode, data }) {
   let date = new Date()
+  console.log({
+    episode,
+    data,
+  })
 
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
