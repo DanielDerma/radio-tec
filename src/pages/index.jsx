@@ -156,6 +156,11 @@ export async function getServerSideProps() {
     }))
     .find(({ id }) => id === '5')
 
+  if (!data) {
+    return {
+      notFound: true,
+    }
+  }
   if (!episode) {
     return {
       notFound: true,
