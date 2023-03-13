@@ -1,4 +1,6 @@
-let admin = require('firebase-admin')
+import * as admin from 'firebase-admin'
+import { credential } from 'firebase-admin'
+import { initializeApp } from 'firebase-admin/app'
 
 let serviceAccount = {
   type: process.env.FIREBASE_ADMIN_TYPE || '',
@@ -16,8 +18,8 @@ let serviceAccount = {
 }
 
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  initializeApp({
+    credential: credential.cert(serviceAccount),
   })
 }
 

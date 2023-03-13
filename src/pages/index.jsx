@@ -7,17 +7,13 @@ import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
 import Edit from '@/icons/Edit'
 import { useSession } from 'next-auth/react'
+import { db } from '@/src/services/firebase'
 
-export default function EpisodeEntry({ episode }) {
+export default function EpisodeEntry({ episode, data }) {
   let date = new Date()
 
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
-
-  const data = {
-    title: 'RADIO TEC HALCONES',
-    description: 'RADIO TEC HALCONES',
-  }
 
   const refTitle = useRef(null)
   const refDescription = useRef(null)
@@ -142,9 +138,9 @@ export default function EpisodeEntry({ episode }) {
 }
 
 export async function getServerSideProps() {
-  // const ref = db.collection('main').doc('home')
-  // const doc = await ref.get()
-  // const data = doc.data()
+  const ref = db.collection('main').doc('home')
+  const doc = await ref.get()
+  const data = doc.data()
   let feed = await parse('https://their-side-feed.vercel.app/api/feed')
   let episode = feed.items
     .map(({ id, title, description, content, enclosures, published }) => ({
@@ -168,6 +164,7 @@ export async function getServerSideProps() {
   return {
     props: {
       episode,
+      data,
     },
   }
 }
