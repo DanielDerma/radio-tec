@@ -1,16 +1,17 @@
 import Head from 'next/head'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { parse } from 'rss-to-json'
 
 import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
 import Edit from '@/icons/Edit'
-import { useSession } from 'next-auth/react'
 import { db } from '@/src/services/firebase'
+import { useSession } from 'next-auth/react'
+import { removeEmpty } from '@/utils/index'
 
 export default function EpisodeEntry({ data }) {
   const [date, setDate] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setDate(new Date())
@@ -21,6 +22,7 @@ export default function EpisodeEntry({ data }) {
 
   const refTitle = useRef(null)
   const refDescription = useRef(null)
+  const refTopiscs = useRef(null)
 
   let audioPlayerData = useMemo(
     () => ({
@@ -37,20 +39,75 @@ export default function EpisodeEntry({ data }) {
 
   const handleEditTitle = () => {
     refTitle.current.contentEditable = true
-    // const range = document.createRange()
-    // range.selectNodeContents(refTitle.current)
-    // const selection = window.getSelection()
-    // selection.removeAllRanges()
-    // selection.addRange(range)
+    const range = document.createRange()
+    range.selectNodeContents(refTitle.current)
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
   }
 
   const handleEditTitleBlur = () => {
-    console.log('hi')
-    // refTitle.current.contentEditable = false
+    refTitle.current.contentEditable = false
+    handleSave()
   }
 
   const handleEditDescripcion = () => {
     refDescription.current.contentEditable = true
+    const range = document.createRange()
+    range.selectNodeContents(refDescription.current)
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+
+  const handleEditDescripcionBlur = () => {
+    refDescription.current.contentEditable = false
+  }
+
+  const handleEditTopics = () => {
+    refTopiscs.current.contentEditable = true
+    const range = document.createRange()
+    range.selectNodeContents(refTopiscs.current)
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+
+  const handleEditTopicsBlur = () => {
+    refTopiscs.current.contentEditable = false
+    handleSave()
+  }
+
+  const handleSave = () => {
+    setLoading(true)
+    const newTitle = refTitle.current.textContent
+    const newDescription = refDescription.current.textContent
+    const newTopics = refTopiscs.current.textContent
+
+    console.log(newTopics)
+
+    const body = removeEmpty({
+      title: data.title === newTitle ? null : newTitle,
+      description: data.description === newDescription ? null : newDescription,
+      topics: data.topics === newTopics ? null : newTopics,
+    })
+
+    fetch('/api/update', {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(body),
+    })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   return (
@@ -59,7 +116,7 @@ export default function EpisodeEntry({ data }) {
         <title>RADIO TEC HALCONES - {data.title}</title>
         <meta name="description" content={data.description} />
       </Head>
-      <article className="py-16 lg:py-36">
+      <article className={`py-16 lg:py-36 ${loading ? 'cursor-wait' : ''}`}>
         <Container>
           <header className="flex flex-col">
             <div className="flex items-center gap-6">
@@ -69,13 +126,11 @@ export default function EpisodeEntry({ data }) {
                   <h1
                     className="mt-2  text-4xl font-bold text-slate-900"
                     ref={refTitle}
+                    onBlur={handleEditTitleBlur}
                   >
                     {data.title}
                   </h1>
-                  <button
-                    onClick={handleEditTitle}
-                    onBlur={handleEditTitleBlur}
-                  >
+                  <button onClick={handleEditTitle}>
                     <Edit
                       className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
                         isSignedIn && 'group-hover:block'
@@ -99,6 +154,7 @@ export default function EpisodeEntry({ data }) {
               <p
                 className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700"
                 ref={refDescription}
+                onBlur={handleEditDescripcionBlur}
               >
                 {data.description}
               </p>
@@ -123,7 +179,7 @@ export default function EpisodeEntry({ data }) {
               </h2>
             </div>
             <div className="group relative">
-              <ul>
+              <ul ref={refTopiscs} onBlur={handleEditTopicsBlur}>
                 <li>
                   What are TPS reports exactly, and what’s the motivation for
                   adding the cover sheet?
@@ -141,11 +197,13 @@ export default function EpisodeEntry({ data }) {
                 <li>The backstory behind how Bill purchased his Porsche 911</li>
                 <li>The real reason he needed the red stapler for himself</li>
               </ul>
-              <Edit
-                className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
-                  isSignedIn && 'group-hover:block'
-                }`}
-              />
+              <button onClick={handleEditTopics}>
+                <Edit
+                  className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                    isSignedIn && 'group-hover:block'
+                  }`}
+                />
+              </button>
             </div>
           </div>
         </Container>
