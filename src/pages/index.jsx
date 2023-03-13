@@ -9,7 +9,7 @@ import Edit from '@/icons/Edit'
 import { useSession } from 'next-auth/react'
 import { db } from '@/src/services/firebase'
 
-export default function EpisodeEntry({ episode, data }) {
+export default function EpisodeEntry({ data }) {
   let date = new Date()
 
   const { status } = useSession()
