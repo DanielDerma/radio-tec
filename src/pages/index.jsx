@@ -22,12 +22,12 @@ export default function EpisodeEntry({ episode, data }) {
     () => ({
       title: data.title,
       audio: {
-        src: episode.audio.src,
-        type: episode.audio.type,
+        src: '',
+        type: '',
       },
-      link: `/${episode.id}`,
+      link: `/1`,
     }),
-    [episode] // eslint-disable-line react-hooks/exhaustive-deps
+    [] // eslint-disable-line react-hooks/exhaustive-deps
   )
   let player = useAudioPlayer(audioPlayerData)
 
@@ -141,25 +141,6 @@ export async function getServerSideProps() {
   const ref = db.collection('main').doc('home')
   const doc = await ref.get()
   const data = doc.data()
-  let feed = await parse('https://their-side-feed.vercel.app/api/feed')
-  let episode = feed.items
-    .map(({ id, title, description, content, enclosures, published }) => ({
-      id: id.toString(),
-      title: `${id}: ${title}`,
-      description,
-      content,
-      published,
-      audio: enclosures.map((enclosure) => ({
-        src: enclosure.url,
-        type: enclosure.type,
-      }))[0],
-    }))
-    .find(({ id }) => id === '5')
-  if (!episode) {
-    return {
-      notFound: true,
-    }
-  }
 
   return {
     props: {
