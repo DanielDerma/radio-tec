@@ -9,12 +9,17 @@ import Edit from '@/icons/Edit'
 import { db } from '@/src/services/firebase'
 import { useSession } from 'next-auth/react'
 
-export default function EpisodeEntry({ episode, data }) {
+export default function EpisodeEntry({ episode }) {
   let date = new Date()
   console.log({
     episode,
     data,
   })
+
+  const data = {
+    title: 'Episodio 1',
+    description: 'Este es el primer episodio de Radio Tec Halcones',
+  }
 
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
