@@ -147,9 +147,9 @@ export default function EpisodeEntry({ episode }) {
 }
 
 export async function getServerSideProps() {
-  const ref = db.collection('main').doc('home')
-  const doc = await ref.get()
-  const data = doc.data()
+  // const ref = db.collection('main').doc('home')
+  // const doc = await ref.get()
+  // const data = doc.data()
   let feed = await parse('https://their-side-feed.vercel.app/api/feed')
   let episode = feed.items
     .map(({ id, title, description, content, enclosures, published }) => ({
@@ -165,11 +165,11 @@ export async function getServerSideProps() {
     }))
     .find(({ id }) => id === '5')
 
-  if (!data) {
-    return {
-      notFound: true,
-    }
-  }
+  // if (!data) {
+  //   return {
+  //     notFound: true,
+  //   }
+  // }
   if (!episode) {
     return {
       notFound: true,
@@ -181,7 +181,6 @@ export async function getServerSideProps() {
   return {
     props: {
       episode,
-      data,
     },
   }
 }
