@@ -6,14 +6,18 @@ import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
 import Edit from '@/icons/Edit'
-import { db } from '@/src/services/firebase'
 import { useSession } from 'next-auth/react'
 
-export default function EpisodeEntry({ episode, data }) {
+export default function EpisodeEntry({ episode }) {
   let date = new Date()
 
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
+
+  const data = {
+    title: 'RADIO TEC HALCONES',
+    description: 'RADIO TEC HALCONES',
+  }
 
   const refTitle = useRef(null)
   const refDescription = useRef(null)
@@ -138,48 +142,32 @@ export default function EpisodeEntry({ episode, data }) {
 }
 
 export async function getServerSideProps() {
-  const ref = db.collection('main').doc('home')
-  const doc = await ref.get()
-  const data = doc.data()
-  try {
-    let feed = await parse('https://their-side-feed.vercel.app/api/feed')
-    let episode = feed.items
-      .map(({ id, title, description, content, enclosures, published }) => ({
-        id: id.toString(),
-        title: `${id}: ${title}`,
-        description,
-        content,
-        published,
-        audio: enclosures.map((enclosure) => ({
-          src: enclosure.url,
-          type: enclosure.type,
-        }))[0],
-      }))
-      .find(({ id }) => id === '5')
-
-    if (!data) {
-      return {
-        notFound: true,
-      }
-    }
-    if (!episode) {
-      return {
-        notFound: true,
-      }
-    }
-
-    console.log(data)
-
-    return {
-      props: {
-        episode,
-        data,
-      },
-    }
-  } catch (error) {
-    console.log(error)
+  // const ref = db.collection('main').doc('home')
+  // const doc = await ref.get()
+  // const data = doc.data()
+  let feed = await parse('https://their-side-feed.vercel.app/api/feed')
+  let episode = feed.items
+    .map(({ id, title, description, content, enclosures, published }) => ({
+      id: id.toString(),
+      title: `${id}: ${title}`,
+      description,
+      content,
+      published,
+      audio: enclosures.map((enclosure) => ({
+        src: enclosure.url,
+        type: enclosure.type,
+      }))[0],
+    }))
+    .find(({ id }) => id === '5')
+  if (!episode) {
     return {
       notFound: true,
     }
+  }
+
+  return {
+    props: {
+      episode,
+    },
   }
 }
