@@ -1,12 +1,11 @@
-import { useId, useState } from 'react'
-import Image from "next/legacy/image"
-import Link from 'next/link'
 import clsx from 'clsx'
+import Image from 'next/legacy/image'
+import { useId, useState } from 'react'
 
 import { AudioPlayer } from '@/components/player/AudioPlayer'
-import posterImage from 'public/tec2.png'
+import posterImage from 'public/tec.png'
 // import posterImage from '@/images/poster.png'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 
 function random(length, min, max, seed = 1) {
   return Array.from({ length }).map(() => {
