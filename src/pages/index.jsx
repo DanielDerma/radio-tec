@@ -92,8 +92,35 @@ export default function EpisodeEntry({ data }) {
   return (
     <>
       <Head>
-        <title>RADIO TEC HALCONES - {data.title}</title>
+        <title>{data.title} - RADIO TEC HALCONES</title>
         <meta name="description" content={data.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+
+        <meta
+          property="og:title"
+          content={`${data.title} - RADIO TEC HALCONES`}
+        />
+        <meta
+          property="og:image"
+          content={`https://radio-tec.vercel.app/api/og?title=${data.title}`}
+        />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:site_name"
+          content={`${data.title} - RADIO TEC HALCONES`}
+        />
+
+        {/* generic */}
+        <meta property="og:type" content="website" />
+        <meta property="og:image:type" content="image/jpeg" />
+
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+
+        <meta property="og:url" content="https://radio-tec.vercel.app/" />
+        <meta property="og:description" content={data.description} />
+        <meta property="fb:app_id" content="749045479981007" />
       </Head>
       <article
         className={`py-16 lg:py-36 ${

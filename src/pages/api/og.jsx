@@ -23,7 +23,7 @@ export default function handler(req) {
           <img
             alt="Vercel"
             height={200}
-            src="https://radio-tec.vercel.app/tec2.png"
+            src="https://radio-tec.vercel.app/tec.png"
             style={{ margin: '0 30px' }}
             width={232}
           />
