@@ -62,9 +62,7 @@ function EpisodeEntry({ episode }) {
             id={`episode-${episode.id}-title`}
             className="mt-2 text-lg font-bold text-slate-900"
           >
-            <Link href={`/${episode.id}`}>
-              <a>{episode.title}</a>
-            </Link>
+            <Link href={`/${episode.id}`}>{episode.title}</Link>
           </h2>
           <time
             dateTime={date.toISOString()}
@@ -83,7 +81,7 @@ function EpisodeEntry({ episode }) {
             <button
               type="button"
               onClick={() => player.toggle()}
-              className="flex items-center text-sm font-bold leading-6 text-pink-500 hover:text-pink-700 active:text-pink-900"
+              className="flex items-center text-sm font-bold leading-6 text-primary hover:text-primaryHover active:text-primaryActive"
             >
               <span className="sr-only">
                 {player.playing ? 'Pause' : 'Play'}
@@ -116,10 +114,11 @@ function EpisodeEntry({ episode }) {
             >
               /
             </span>
-            <Link href={`/${episode.id}`}>
-              <a className="flex items-center text-sm font-bold leading-6 text-pink-500 hover:text-pink-700 active:text-pink-900">
-                Show notes
-              </a>
+            <Link
+              href={`/${episode.id}`}
+              className="flex items-center text-sm font-bold leading-6 text-primary hover:text-primaryHover active:text-primaryActive"
+            >
+              Show notes
             </Link>
           </div>
         </div>

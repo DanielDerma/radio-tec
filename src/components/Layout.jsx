@@ -6,6 +6,7 @@ import { AudioPlayer } from '@/components/player/AudioPlayer'
 import posterImage from 'public/tec.png'
 // import posterImage from '@/images/poster.png'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
 
 function random(length, min, max, seed = 1) {
   return Array.from({ length }).map(() => {
@@ -169,9 +170,10 @@ export function Layout({ children }) {
           </span>
         </div>
         <div className="relative z-10 mx-auto px-4 pb-4 pt-10 sm:px-6 md:max-w-2xl md:px-4 lg:min-h-full lg:flex-auto lg:border-x lg:border-slate-200 lg:py-12 lg:px-8 xl:px-12">
-          <div
+          <Link
             className="relative mx-auto block w-48 overflow-hidden rounded-lg bg-slate-200 shadow-md shadow-slate-200 sm:w-64 sm:rounded-xl lg:w-auto lg:rounded-2xl"
             aria-label="Homepage"
+            href="/"
           >
             <Image
               src={posterImage}
@@ -181,7 +183,7 @@ export function Layout({ children }) {
               priority
             />
             <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-black/10 sm:rounded-xl lg:rounded-2xl" />
-          </div>
+          </Link>
           <div className="mt-10 text-center lg:mt-12 lg:text-left">
             <p className="text-xl font-bold text-primary">RADIO TEC HALCONES</p>
             <p className="mt-3 text-lg font-medium leading-8 text-slate-700">

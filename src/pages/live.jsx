@@ -210,6 +210,12 @@ export async function getServerSideProps() {
   const doc = await ref.get()
   const data = doc.data()
 
+  if (!data) {
+    return {
+      notFound: true,
+    }
+  }
+
   return {
     props: {
       data,
