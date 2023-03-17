@@ -9,25 +9,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const episodesRef = db.collection('episodes')
-    const snapshot = await episodesRef.orderBy('date', 'desc').get()
-
-    if (snapshot.empty) {
-      res.status(200).json({
-        message: 'No episodes',
-      })
-      return
-    }
-
+    // get all episodes from firestore collection 'episodes' ordered by date
+    const snapshot = await db
+      .collection('episodes')
+      .orderBy('published', 'desc')
+      .get()
     const episodes = []
 
     snapshot.forEach((doc) => {
-      episodes.push(doc.data())
+      episodes.push({
+        id: doc.id,
+        ...doc.data(),
+      })
     })
 
-    res.status(200).json({
-      episodes,
+    // sort episodes by date, newest first
+    episodes.sort((a, b) => {
+      return new Date(b.published) - new Date(a.published)
     })
+
+    res.status(200).json(episodes)
   } catch (error) {
     console.log(error)
     res.status(500).json({

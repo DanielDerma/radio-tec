@@ -5,7 +5,7 @@ import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
 import Edit from '@/icons/Edit'
-import { db } from '@/services/firebase/server'
+import admin from '@/services/firebase/server'
 import { removeEmpty } from '@/utils/index'
 import { useSession } from 'next-auth/react'
 import sanitizeHtml from 'sanitize-html'
@@ -25,12 +25,14 @@ export default function EpisodeEntry({ data }) {
   const refDescription = useRef(null)
   const refTopiscs = useRef(null)
 
+  console.log(data.audio)
+
   let audioPlayerData = useMemo(
     () => ({
       title: data.title,
       audio: {
-        src: '',
-        type: '',
+        src: data.audio,
+        type: 'audio/mpeg',
       },
       link: `/1`,
     }),
@@ -206,7 +208,8 @@ export default function EpisodeEntry({ data }) {
 }
 
 export async function getServerSideProps() {
-  const ref = db.collection('episodes').doc('live')
+  const db = admin.firestore()
+  const ref = db.collection('main').doc('live')
   const doc = await ref.get()
   const data = doc.data()
 
@@ -218,7 +221,10 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      data,
+      data: {
+        ...data,
+        audio: `${process.env.VERCEL_URL}/api/audio/${data.slug}`,
+      },
     },
   }
 }

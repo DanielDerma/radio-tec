@@ -10,10 +10,7 @@ export default function Home({ episodes }) {
   return (
     <>
       <Head>
-        <title>
-          Their Side - Conversations with the most tragically misunderstood
-          people of our time
-        </title>
+        <title>Radio TEC Halcones</title>
         <meta
           name="description"
           content="Conversations with the most tragically misunderstood people of our time."
@@ -42,8 +39,8 @@ function EpisodeEntry({ episode }) {
     () => ({
       title: episode.title,
       audio: {
-        src: episode.audio.src,
-        type: episode.audio.type,
+        src: episode.audio,
+        type: 'audio/mpeg',
       },
       link: `/${episode.id}`,
     }),
@@ -68,7 +65,7 @@ function EpisodeEntry({ episode }) {
             dateTime={date.toISOString()}
             className="-order-1 font-mono text-sm leading-7 text-slate-500"
           >
-            {new Intl.DateTimeFormat('en-US', {
+            {new Intl.DateTimeFormat('es-ES', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -128,22 +125,18 @@ function EpisodeEntry({ episode }) {
 }
 
 export async function getStaticProps() {
-  const feed = await parse('https://their-side-feed.vercel.app/api/feed')
+  const dataJson = await fetch(`${process.env.VERCEL_URL}/api/feed`)
+  const data = await dataJson.json()
 
   return {
     props: {
-      episodes: feed.items.map(
-        ({ id, title, description, enclosures, published }) => ({
-          id,
-          title: `${id}: ${title}`,
-          published,
-          description,
-          audio: enclosures.map((enclosure) => ({
-            src: enclosure.url,
-            type: enclosure.type,
-          }))[0],
-        })
-      ),
+      episodes: data.map((episode) => ({
+        ...episode,
+        audio: `${process.env.VERCEL_URL}/api/audio/${episode.slug}.mp3`,
+        published:
+          episode.published._seconds * 1000 +
+          episode.published._nanoseconds / 1000000,
+      })),
     },
     revalidate: 10,
   }
