@@ -72,8 +72,6 @@ export default function EpisodeEntry({ data }) {
       description: data.description === newDescription ? null : newDescription,
       topics: data.topics === newTopics ? null : newTopics,
     })
-    console.log(body)
-
     fetch('/api/update', {
       method: 'POST',
       headers: new Headers({

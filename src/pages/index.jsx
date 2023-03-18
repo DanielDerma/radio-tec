@@ -158,6 +158,7 @@ function EpisodeEntry({ episode }) {
 }
 
 export async function getServerSideProps() {
+  console.log(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/feed`)
   const dataJson = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/feed`)
   const data = await dataJson.json()
 

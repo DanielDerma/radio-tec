@@ -23,6 +23,9 @@ function Waveform() {
   let barGap = 2
   let lengths = random(barCount, 40, 100)
 
+  console.log(process.env.NEXT_PUBLIC_VERCEL_URL)
+  console.log(process.env)
+
   return (
     <svg aria-hidden="true" className="absolute left-0 top-0 h-20 w-full">
       <defs>
