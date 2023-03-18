@@ -157,7 +157,7 @@ function EpisodeEntry({ episode }) {
   )
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const dataJson = await fetch(`${process.env.VERCEL_URL}/api/feed`)
   const data = await dataJson.json()
 
@@ -171,6 +171,5 @@ export async function getStaticProps() {
           episode.published._nanoseconds / 1000000,
       })),
     },
-    revalidate: 10,
   }
 }
