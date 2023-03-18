@@ -135,7 +135,7 @@ function EpisodeEntry({ episode }) {
               </svg>
 
               <span className="ml-3" aria-hidden="true">
-                Listen
+                Escuchar
               </span>
             </button>
             <span
@@ -148,7 +148,7 @@ function EpisodeEntry({ episode }) {
               href={`/${episode.id}`}
               className="flex items-center text-sm font-bold leading-6 text-primary hover:text-primaryHover active:text-primaryActive"
             >
-              Show notes
+              Mostrar notas
             </Link>
           </div>
         </div>
@@ -158,14 +158,19 @@ function EpisodeEntry({ episode }) {
 }
 
 export async function getServerSideProps() {
-  const dataJson = await fetch(`${process.env.VERCEL_URL}/api/feed`)
+  const dataJson = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/feed`)
   const data = await dataJson.json()
+  if (!data) {
+    return {
+      notFound: true,
+    }
+  }
 
   return {
     props: {
       episodes: data.map((episode) => ({
         ...episode,
-        audio: `${process.env.VERCEL_URL}/api/audio/${episode.slug}.mp3`,
+        audio: `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/audio/${episode.slug}.mp3`,
         published:
           episode.published._seconds * 1000 +
           episode.published._nanoseconds / 1000000,
