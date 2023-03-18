@@ -158,15 +158,14 @@ function EpisodeEntry({ episode }) {
 }
 
 export async function getServerSideProps() {
-  const dataJson = await fetch('https://radio-tec.vercel.app/api/feed')
+  const dataJson = await fetch(`${process.env.VERCEL_URL}/api/feed`)
   const data = await dataJson.json()
 
   return {
     props: {
       episodes: data.map((episode) => ({
         ...episode,
-        audio: 'https://radio-tec.vercel.app/api/audio/hello-world.mp3',
-        // audio: `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/audio/${episode.slug}.mp3`,
+        audio: `${process.env.VERCEL_URL}/api/audio/${episode.slug}.mp3`,
         published:
           episode.published._seconds * 1000 +
           episode.published._nanoseconds / 1000000,
