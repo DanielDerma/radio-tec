@@ -39,6 +39,7 @@ export default function EpisodeEntry({ data }) {
   let player = useAudioPlayer(audioPlayerData)
 
   const handleEdit = (ref) => {
+    console.log('hello2')
     ref.current.contentEditable = true
     const range = document.createRange()
     range.selectNodeContents(ref.current)
@@ -48,6 +49,7 @@ export default function EpisodeEntry({ data }) {
   }
 
   const handlerBlur = (ref) => {
+    console.log('hello')
     ref.current.contentEditable = false
     handleSave()
   }
@@ -70,6 +72,7 @@ export default function EpisodeEntry({ data }) {
       description: data.description === newDescription ? null : newDescription,
       topics: data.topics === newTopics ? null : newTopics,
     })
+    console.log(body)
 
     fetch('/api/update', {
       method: 'POST',
