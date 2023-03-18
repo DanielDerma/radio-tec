@@ -5,7 +5,7 @@ import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
 import Edit from '@/icons/Edit'
-import admin from '@/services/firebase/server'
+import { db } from '@/services/firebase/server'
 import { removeEmpty } from '@/utils/index'
 import { useSession } from 'next-auth/react'
 import sanitizeHtml from 'sanitize-html'
@@ -206,7 +206,6 @@ export default function EpisodeEntry({ data }) {
 }
 
 export async function getServerSideProps() {
-  const db = admin.firestore()
   const ref = db.collection('main').doc('live')
   const doc = await ref.get()
   const data = doc.data()

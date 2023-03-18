@@ -1,13 +1,25 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import Head from 'next/head'
 import { parse } from 'rss-to-json'
 
 import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
+import { db } from '@/services/firebase/server'
+import Edit from '@/icons/Edit'
+import { useSession } from 'next-auth/react'
+import sanitizeHtml from 'sanitize-html'
 
 export default function Episode({ episode }) {
+  console.log(episode)
   let date = new Date(episode.published)
+
+  const refTitle = useRef(null)
+  const refDescription = useRef(null)
+  const refTopiscs = useRef(null)
+
+  const { status } = useSession()
+  const isSignedIn = status === 'authenticated'
 
   let audioPlayerData = useMemo(
     () => ({
@@ -34,9 +46,22 @@ export default function Episode({ episode }) {
             <div className="flex items-center gap-6">
               <PlayButton player={player} size="large" />
               <div className="flex flex-col">
-                <h1 className="mt-2 text-4xl font-bold text-slate-900">
-                  {episode.title}
-                </h1>
+                <div className="group relative">
+                  <h1
+                    className="mt-2  text-4xl font-bold text-slate-900"
+                    ref={refTitle}
+                    onBlur={() => handlerBlur(refTitle)}
+                  >
+                    {episode.title}
+                  </h1>
+                  <button onClick={() => handleEdit(refTitle)}>
+                    <Edit
+                      className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                        isSignedIn && 'group-hover:block'
+                      }`}
+                    />
+                  </button>
+                </div>
                 <time
                   dateTime={date.toISOString()}
                   className="-order-1 font-mono text-sm leading-7 text-slate-500"
@@ -54,57 +79,104 @@ export default function Episode({ episode }) {
             </p>
           </header>
           <hr className="my-12 border-gray-200" />
-          <div
-            className="prose prose-slate mt-14 [&>h2]:mt-12 [&>h2]:flex [&>h2]:items-center [&>h2]:font-mono [&>h2]:text-sm [&>h2]:font-medium [&>h2]:leading-7 [&>h2]:text-slate-900 [&>h2]:before:mr-3 [&>h2]:before:h-3 [&>h2]:before:w-1.5 [&>h2]:before:rounded-r-full [&>h2]:before:bg-cyan-200 [&>ul]:mt-6 [&>ul]:list-['\2013\20'] [&>ul]:pl-5 [&>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>h2:nth-of-type(3n)]:before:bg-violet-200"
-            dangerouslySetInnerHTML={{ __html: episode.content }}
-          />
+          <div className="prose prose-slate mt-14 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-primary [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200">
+            <div className="">
+              <h2 id="topics" className="">
+                Temas
+              </h2>
+            </div>
+            <div className="group relative">
+              <ul
+                ref={refTopiscs}
+                onBlur={() => handlerBlur(refTopiscs)}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHtml(episode.topics),
+                }}
+              />
+              <button onClick={() => handleEdit(refTopiscs)}>
+                <Edit
+                  className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                    isSignedIn && 'group-hover:block'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
         </Container>
       </article>
     </>
   )
 }
 
-export async function getStaticProps({ params }) {
-  let feed = await parse('https://their-side-feed.vercel.app/api/feed')
-  let episode = feed.items
-    .map(({ id, title, description, content, enclosures, published }) => ({
-      id: id.toString(),
-      title: `${id}: ${title}`,
-      description,
-      content,
-      published,
-      audio: enclosures.map((enclosure) => ({
-        src: enclosure.url,
-        type: enclosure.type,
-      }))[0],
-    }))
-    .find(({ id }) => id === params.episode)
+// export async function getStaticProps({ params }) {
+//   let feed = await parse('https://their-side-feed.vercel.app/api/feed')
+//   let episode = feed.items
+//     .map(({ id, title, description, content, enclosures, published }) => ({
+//       id: id.toString(),
+//       title: `${id}: ${title}`,
+//       description,
+//       content,
+//       published,
+//       audio: enclosures.map((enclosure) => ({
+//         src: enclosure.url,
+//         type: enclosure.type,
+//       }))[0],
+//     }))
+//     .find(({ id }) => id === params.episode)
 
-  console.log(episode)
+//   console.log(episode)
 
-  if (!episode) {
+//   if (!episode) {
+//     return {
+//       notFound: true,
+//     }
+//   }
+
+//   return {
+//     props: {
+//       episode,
+//     },
+//     revalidate: 10,
+//   }
+// }
+
+// export async function getStaticPaths() {
+//   let feed = await parse('https://their-side-feed.vercel.app/api/feed')
+
+//   return {
+//     paths: feed.items.map(({ id }) => ({
+//       params: {
+//         episode: id.toString(),
+//       },
+//     })),
+//     fallback: 'blocking',
+//   }
+// }
+
+export async function getServerSideProps(ctx) {
+  const { episode } = ctx.params
+  const ref = db.collection('episodes').doc(episode)
+  const doc = await ref.get()
+  const data = doc.data()
+
+  if (!data) {
     return {
       notFound: true,
     }
   }
 
+  const episodeResponse = {
+    ...data,
+    audio: `${process.env.VERCEL_URL}/api/audio/${data.slug}`,
+    published:
+      data.published._seconds * 1000 + data.published._nanoseconds / 1000000,
+  }
+
+  console.log(episodeResponse)
+
   return {
     props: {
-      episode,
+      episode: episodeResponse,
     },
-    revalidate: 10,
-  }
-}
-
-export async function getStaticPaths() {
-  let feed = await parse('https://their-side-feed.vercel.app/api/feed')
-
-  return {
-    paths: feed.items.map(({ id }) => ({
-      params: {
-        episode: id.toString(),
-      },
-    })),
-    fallback: 'blocking',
   }
 }

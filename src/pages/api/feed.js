@@ -9,7 +9,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // get all episodes from firestore collection 'episodes' ordered by date
     const snapshot = await db
       .collection('episodes')
       .orderBy('published', 'desc')
@@ -23,7 +22,6 @@ export default async function handler(req, res) {
       })
     })
 
-    // sort episodes by date, newest first
     episodes.sort((a, b) => {
       return new Date(b.published) - new Date(a.published)
     })
