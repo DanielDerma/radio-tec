@@ -131,10 +131,12 @@ export function useAudioPlayer(data) {
   )
 }
 
-{/* <audio
+{
+  /* <audio
         autoPlay="wCdZKQXZHGBIuMqykoAwBLvTJhqRceQL2IRLOqVkNXdOHJDt1qslBqwshXZSKZIqb5yLr1BUu1teJcku1S1keWVammPOwjdkiHNdOl"
         controls="controls"
         className="hidden"
       >
         <source src="http://radiotec.delicias.tecnm.mx:8000/live" />
-      </audio> */}
+      </audio> */
+}

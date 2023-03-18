@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { parse } from 'rss-to-json'
@@ -17,10 +17,27 @@ export default function Home({ episodes }) {
         />
       </Head>
       <div className="pt-16 pb-12 sm:pb-4 lg:pt-12">
+        {/* <Container>
+          <h2 className="text-2xl font-bold leading-7 text-slate-900">Live</h2>
+        </Container> */}
+
+        <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 lg:border-t lg:border-slate-100">
+          <EpisodeEntry
+            episode={{
+              id: 'live',
+              title: 'Radio TEC Halcones',
+              description:
+                'Conversations with the most tragically misunderstood people of our time.',
+              audio: 'https://their-side-feed.vercel.app/episode-005.mp3',
+              isLive: true,
+            }}
+          />
+        </div>
+
         <Container>
-          <h1 className="text-2xl font-bold leading-7 text-slate-900">
+          <h2 className="text-xl font-bold leading-7 text-slate-900">
             Episodes
-          </h1>
+          </h2>
         </Container>
         <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 lg:border-t lg:border-slate-100">
           {episodes.map((episode) => (
@@ -33,7 +50,15 @@ export default function Home({ episodes }) {
 }
 
 function EpisodeEntry({ episode }) {
-  let date = new Date(episode.published)
+  const [date, setDate] = useState('')
+
+  useEffect(() => {
+    if (episode.isLive) {
+      setDate(new Date())
+    } else {
+      setDate(new Date(episode.published))
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   let audioPlayerData = useMemo(
     () => ({
@@ -57,12 +82,20 @@ function EpisodeEntry({ episode }) {
         <div className="flex flex-col items-start">
           <h2
             id={`episode-${episode.id}-title`}
-            className="mt-2 text-lg font-bold text-slate-900"
+            className="mt-2 items-center text-lg font-bold text-slate-900"
           >
-            <Link href={`/${episode.id}`}>{episode.title}</Link>
+            <Link href={`/${episode.id}`} className="flex gap-x-4">
+              <p>{episode.title}</p>
+              {episode.isLive && (
+                <div className="flex items-center gap-x-1 rounded-md border">
+                  <div className="ml-1 h-3  w-3 animate-pulse rounded-full bg-red-400" />
+                  <p className="mr-1 text-sm">LIVE</p>
+                </div>
+              )}
+            </Link>
           </h2>
           <time
-            dateTime={date.toISOString()}
+            dateTime={date ? date : ''}
             className="-order-1 font-mono text-sm leading-7 text-slate-500"
           >
             {new Intl.DateTimeFormat('es-ES', {

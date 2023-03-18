@@ -25,8 +25,6 @@ export default function EpisodeEntry({ data }) {
   const refDescription = useRef(null)
   const refTopiscs = useRef(null)
 
-  console.log(data.audio)
-
   let audioPlayerData = useMemo(
     () => ({
       title: data.title,
@@ -151,7 +149,7 @@ export default function EpisodeEntry({ data }) {
                   </button>
                 </div>
                 <time
-                  dateTime={date}
+                  dateTime={date && date.toISOString()}
                   className="-order-1 font-mono text-sm leading-7 text-slate-500"
                 >
                   {new Intl.DateTimeFormat('es-ES', {
