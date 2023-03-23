@@ -1,4 +1,4 @@
-import { db } from '@/services/firebase/server'
+import { db } from '../../services/firebase/server'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
