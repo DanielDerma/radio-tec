@@ -186,9 +186,6 @@ export function Layout({ children }) {
           </Link>
           <div className="mt-10 text-center lg:mt-12 lg:text-left">
             <p className="text-xl font-bold text-primary">RADIO TEC HALCONES</p>
-            <p className="text-xl font-bold text-primary">
-              {process.env.NEXT_PUBLIC_VERCEL_URL}
-            </p>
             <p className="mt-3 text-lg font-medium leading-8 text-slate-700">
               Escucha, aprende y descubre con Radio Tec Halcones.
             </p>

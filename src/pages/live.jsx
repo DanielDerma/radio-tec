@@ -5,7 +5,6 @@ import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
 import { PlayButton } from '@/components/player/PlayButton'
 import Edit from '@/icons/Edit'
-import { db } from '@/services/firebase/server'
 import { removeEmpty } from '@/utils/index'
 import { useSession } from 'next-auth/react'
 import sanitizeHtml from 'sanitize-html'
@@ -20,6 +19,7 @@ export default function EpisodeEntry({ data }) {
 
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
+  console.log(data)
 
   const refTitle = useRef(null)
   const refDescription = useRef(null)
@@ -39,7 +39,6 @@ export default function EpisodeEntry({ data }) {
   let player = useAudioPlayer(audioPlayerData)
 
   const handleEdit = (ref) => {
-    console.log('hello2')
     ref.current.contentEditable = true
     const range = document.createRange()
     range.selectNodeContents(ref.current)
@@ -49,7 +48,6 @@ export default function EpisodeEntry({ data }) {
   }
 
   const handlerBlur = (ref) => {
-    console.log('hello')
     ref.current.contentEditable = false
     handleSave()
   }
@@ -207,9 +205,8 @@ export default function EpisodeEntry({ data }) {
 }
 
 export async function getServerSideProps() {
-  const ref = db.collection('main').doc('live')
-  const doc = await ref.get()
-  const data = doc.data()
+  const liveJson = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/live`)
+  const data = await liveJson.json()
 
   if (!data) {
     return {
@@ -221,7 +218,7 @@ export async function getServerSideProps() {
     props: {
       data: {
         ...data,
-        audio: `${process.env.VERCEL_URL}/api/audio/${data.slug}`,
+        audio: `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/audio/${data.slug}`,
       },
     },
   }

@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   const body = req.body
 
   try {
-    const ref = db.collection('main').doc('home')
+    const ref = db.collection('main').doc('live')
     await ref.update(body)
 
     res.status(200).json({

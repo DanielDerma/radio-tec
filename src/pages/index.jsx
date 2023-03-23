@@ -6,7 +6,7 @@ import { parse } from 'rss-to-json'
 import { useAudioPlayer } from '@/components/AudioProvider'
 import { Container } from '@/components/Container'
 
-export default function Home({ episodes }) {
+export default function Home({ episodes, live }) {
   return (
     <>
       <Head>
@@ -25,10 +25,9 @@ export default function Home({ episodes }) {
           <EpisodeEntry
             episode={{
               id: 'live',
-              title: 'Radio TEC Halcones',
-              description:
-                'Conversations with the most tragically misunderstood people of our time.',
-              audio: 'https://their-side-feed.vercel.app/episode-005.mp3',
+              title: live.title,
+              description: live.description,
+              audio: process.env.NEXT_PUBLIC_LIVE_URL,
               isLive: true,
             }}
           />
@@ -36,7 +35,7 @@ export default function Home({ episodes }) {
 
         <Container>
           <h2 className="text-xl font-bold leading-7 text-slate-900">
-            Episodes
+            Episodios
           </h2>
         </Container>
         <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 lg:border-t lg:border-slate-100">
@@ -53,11 +52,7 @@ function EpisodeEntry({ episode }) {
   const [date, setDate] = useState('')
 
   useEffect(() => {
-    if (episode.isLive) {
-      setDate(new Date())
-    } else {
-      setDate(new Date(episode.published))
-    }
+    setDate(episode.isLive ? new Date() : new Date(episode.published))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   let audioPlayerData = useMemo(
@@ -66,6 +61,7 @@ function EpisodeEntry({ episode }) {
       audio: {
         src: episode.audio,
         type: 'audio/mpeg',
+        isLive: episode.isLive,
       },
       link: `/${episode.id}`,
     }),
@@ -159,8 +155,9 @@ function EpisodeEntry({ episode }) {
 
 export async function getServerSideProps() {
   const dataJson = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/feed`)
-  const data = await dataJson.json()
-  if (!data) {
+  const { episodes, live } = await dataJson.json()
+
+  if (!episodes || !live) {
     return {
       notFound: true,
     }
@@ -168,13 +165,14 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      episodes: data.map((episode) => ({
+      episodes: episodes.map((episode) => ({
         ...episode,
         audio: `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/audio/${episode.slug}.mp3`,
         published:
           episode.published._seconds * 1000 +
           episode.published._nanoseconds / 1000000,
       })),
+      live,
     },
   }
 }

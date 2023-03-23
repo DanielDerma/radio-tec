@@ -11,7 +11,6 @@ import { useSession } from 'next-auth/react'
 import sanitizeHtml from 'sanitize-html'
 
 export default function Episode({ episode }) {
-  console.log(episode)
   let date = new Date(episode.published)
 
   const refTitle = useRef(null)
@@ -25,8 +24,8 @@ export default function Episode({ episode }) {
     () => ({
       title: episode.title,
       audio: {
-        src: episode.audio.src,
-        type: episode.audio.type,
+        src: episode.audio,
+        type: 'audio/mpeg',
       },
       link: `/${episode.id}`,
     }),
@@ -60,13 +59,13 @@ export default function Episode({ episode }) {
                         isSignedIn && 'group-hover:block'
                       }`}
                     />
-                  </button>
+                  </button> 
                 </div>
                 <time
                   dateTime={date.toISOString()}
                   className="-order-1 font-mono text-sm leading-7 text-slate-500"
                 >
-                  {new Intl.DateTimeFormat('en-US', {
+                  {new Intl.DateTimeFormat('es-ES', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -74,9 +73,22 @@ export default function Episode({ episode }) {
                 </time>
               </div>
             </div>
-            <p className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700">
-              {episode.description}
-            </p>
+            <div className="group relative">
+              <p
+                className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700"
+                ref={refDescription}
+                onBlur={() => handlerBlur(refDescription)}
+              >
+                {episode.description}
+              </p>
+              <button onClick={() => handleEdit(refDescription)}>
+                <Edit
+                  className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                    isSignedIn && 'group-hover:block'
+                  }`}
+                />
+              </button>
+            </div>
           </header>
           <hr className="my-12 border-gray-200" />
           <div className="prose prose-slate mt-14 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-primary [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200">
@@ -167,7 +179,7 @@ export async function getServerSideProps(ctx) {
 
   const episodeResponse = {
     ...data,
-    audio: `${process.env.VERCEL_URL}/api/audio/${data.slug}`,
+    audio: `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/audio/${data.slug}.mp3`,
     published:
       data.published._seconds * 1000 + data.published._nanoseconds / 1000000,
   }
