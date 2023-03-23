@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { parse } from 'rss-to-json'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useAudioPlayer } from '@/components/AudioProvider'
-import { Container } from '@/components/Container'
+import { Container } from '../components/Container'
 
 export default function Home({ episodes, live }) {
   return (

@@ -1,21 +1,18 @@
-import { AudioProvider } from '@/components/AudioProvider'
-import { Layout } from '@/components/Layout'
+import { AudioProvider } from '../components/AudioProvider'
+import { Layout } from '../components/Layout'
 
-import '@/styles/tailwind.css'
+import { AuthProvider } from '../context/AuthCtx'
+import '../styles/tailwind.css'
 import 'focus-visible'
-import { SessionProvider } from 'next-auth/react'
 
-export default function App({
-  Component,
-  pageProps: { session, ...pageProps },
-}) {
+export default function App({ Component, pageProps }) {
   return (
-    <SessionProvider session={session}>
+    <AuthProvider>
       <AudioProvider>
         <Layout>
           <Component {...pageProps} />
         </Layout>
       </AudioProvider>
-    </SessionProvider>
+    </AuthProvider>
   )
 }

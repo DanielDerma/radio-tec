@@ -1,5 +1,5 @@
-import { authOptions } from '@/pages/api/auth/[...nextauth]'
-import { db } from '@/services/firebase/server'
+import { authOptions } from '../../pages/api/auth/[...nextauth]'
+import { db } from '../../../services/firebase/server'
 import { getServerSession } from 'next-auth'
 
 export default async function handler(req, res) {

@@ -2,10 +2,11 @@ import clsx from 'clsx'
 import Image from 'next/legacy/image'
 import { useId, useState } from 'react'
 
-import { AudioPlayer } from '@/components/player/AudioPlayer'
+import { AudioPlayer } from './player/AudioPlayer'
+import useSession from '../hooks/useSession'
 import posterImage from 'public/tec.png'
+
 // import posterImage from '@/images/poster.png'
-import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 
 function random(length, min, max, seed = 1) {
@@ -109,14 +110,14 @@ function AboutSection(props) {
 }
 
 export function Layout({ children }) {
-  const { status } = useSession()
+  const { status, login, logout } = useSession()
   const isSignedIn = status === 'authenticated'
 
   const handleSession = () => {
     if (isSignedIn) {
-      signOut()
+      logout()
     } else {
-      signIn()
+      login()
     }
   }
 

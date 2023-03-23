@@ -2,12 +2,12 @@ import { useMemo, useRef } from 'react'
 import Head from 'next/head'
 import { parse } from 'rss-to-json'
 
-import { useAudioPlayer } from '@/components/AudioProvider'
-import { Container } from '@/components/Container'
-import { PlayButton } from '@/components/player/PlayButton'
-import { db } from '@/services/firebase/server'
-import Edit from '@/icons/Edit'
-import { useSession } from 'next-auth/react'
+import { useAudioPlayer } from '../components/AudioProvider'
+import { Container } from '../components/Container'
+import { PlayButton } from '../components/player/PlayButton'
+import { db } from '../services/firebase/server'
+import useSession from '../hooks/useSession'
+import Edit from '../icons/Edit'
 import sanitizeHtml from 'sanitize-html'
 
 export default function Episode({ episode }) {
@@ -59,7 +59,7 @@ export default function Episode({ episode }) {
                         isSignedIn && 'group-hover:block'
                       }`}
                     />
-                  </button> 
+                  </button>
                 </div>
                 <time
                   dateTime={date.toISOString()}

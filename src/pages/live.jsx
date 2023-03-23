@@ -1,12 +1,12 @@
 import Head from 'next/head'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { useAudioPlayer } from '@/components/AudioProvider'
-import { Container } from '@/components/Container'
-import { PlayButton } from '@/components/player/PlayButton'
-import Edit from '@/icons/Edit'
-import { removeEmpty } from '@/utils/index'
-import { useSession } from 'next-auth/react'
+import { useAudioPlayer } from '../components/AudioProvider'
+import { Container } from '../components/Container'
+import { PlayButton } from '../components/player/PlayButton'
+import Edit from '../icons/Edit'
+import { removeEmpty } from '../utils/index'
+import useSession from '../hooks/useSession'
 import sanitizeHtml from 'sanitize-html'
 
 export default function EpisodeEntry({ data }) {
