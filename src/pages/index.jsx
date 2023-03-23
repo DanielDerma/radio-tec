@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
-import { useAudioPlayer } from '@/components/AudioProvider'
+import { useAudioPlayer } from '../components/AudioProvider'
 import { Container } from '../components/Container'
 
 export default function Home({ episodes, live }) {
