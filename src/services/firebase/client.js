@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
+import { doc, getFirestore, updateDoc } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
@@ -19,3 +19,18 @@ const storage = getStorage(app)
 const auth = getAuth(app)
 
 export { app, db, storage, auth }
+
+export const updateLive = async (episode) => {
+  const docRef = doc(db, 'main', 'live')
+  await updateDoc(docRef, episode)
+  return {
+    success: true,
+  }
+}
+export const updateEpisode = async (id, episode) => {
+  const docRef = doc(db, 'main', id)
+  await updateDoc(docRef, episode)
+  return {
+    success: true,
+  }
+}

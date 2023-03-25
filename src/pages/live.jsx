@@ -1,13 +1,14 @@
 import Head from 'next/head'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import sanitizeHtml from 'sanitize-html'
 import { useAudioPlayer } from '../components/AudioProvider'
 import { Container } from '../components/Container'
 import { PlayButton } from '../components/player/PlayButton'
-import Edit from '../icons/Edit'
-import { removeEmpty } from '../utils/index'
 import useSession from '../hooks/useSession'
-import sanitizeHtml from 'sanitize-html'
+import Edit from '../icons/Edit'
+import { updateLive } from '../services/firebase/client'
+import { removeEmpty } from '../utils/index'
 
 export default function EpisodeEntry({ data }) {
   const [date, setDate] = useState('')
@@ -70,13 +71,7 @@ export default function EpisodeEntry({ data }) {
       description: data.description === newDescription ? null : newDescription,
       topics: data.topics === newTopics ? null : newTopics,
     })
-    fetch('/api/update', {
-      method: 'POST',
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify(body),
-    })
+    updateLive(body)
       .then((res) => {
         console.log(res)
       })
@@ -218,7 +213,7 @@ export async function getServerSideProps() {
     props: {
       data: {
         ...data,
-        audio: `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/audio/${data.slug}`,
+        audio: process.env.NEXT_PUBLIC_LIVE_URL,
       },
     },
   }

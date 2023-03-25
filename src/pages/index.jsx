@@ -34,7 +34,7 @@ export default function Home({ episodes, live }) {
 
         <Container>
           <h2 className="text-xl font-bold leading-7 text-slate-900">
-            Episodios
+            Transmisiones pasadas
           </h2>
         </Container>
         <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 lg:border-t lg:border-slate-100">

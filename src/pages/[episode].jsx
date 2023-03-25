@@ -9,6 +9,7 @@ import { db } from '../services/firebase/server'
 import useSession from '../hooks/useSession'
 import Edit from '../icons/Edit'
 import sanitizeHtml from 'sanitize-html'
+import { updateEpisode } from '../services/firebase/client'
 
 export default function Episode({ episode }) {
   let date = new Date(episode.published)
@@ -32,6 +33,50 @@ export default function Episode({ episode }) {
     [episode]
   )
   let player = useAudioPlayer(audioPlayerData)
+
+  const handleEdit = (ref) => {
+    ref.current.contentEditable = true
+    const range = document.createRange()
+    range.selectNodeContents(ref.current)
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+
+  const handlerBlur = (ref) => {
+    ref.current.contentEditable = false
+    handleSave()
+  }
+
+  const handleSave = () => {
+    setLoading(true)
+    const isTitleEmpty = refTopiscs.current.innerHTML === ''
+    const newTitle = refTitle.current.textContent
+    const newDescription = refDescription.current.textContent
+    const newTopics = isTitleEmpty
+      ? '<li><br></li>'
+      : refTopiscs.current.innerHTML
+
+    if (isTitleEmpty) {
+      refTopiscs.current.innerHTML = '<li><br></li>'
+    }
+
+    const body = removeEmpty({
+      title: data.title === newTitle ? null : newTitle,
+      description: data.description === newDescription ? null : newDescription,
+      topics: data.topics === newTopics ? null : newTopics,
+    })
+    updateEpisode(body)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
 
   return (
     <>

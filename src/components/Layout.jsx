@@ -6,6 +6,8 @@ import { AudioPlayer } from './player/AudioPlayer'
 import useSession from '../hooks/useSession'
 import posterImage from 'public/tec.png'
 
+import ModalLogin from './ModalLogin'
+
 // import posterImage from '@/images/poster.png'
 import Link from 'next/link'
 
@@ -102,7 +104,7 @@ function AboutSection(props) {
           className="mt-2 hidden text-sm font-bold leading-6 text-primary hover:text-primaryHover active:text-primaryActive lg:inline-block"
           onClick={() => setIsExpanded(true)}
         >
-          Show more
+          Mostrar más
         </button>
       )}
     </section>
@@ -111,18 +113,20 @@ function AboutSection(props) {
 
 export function Layout({ children }) {
   const { status, login, logout } = useSession()
+  const [openModal, setOpenModal] = useState(false)
   const isSignedIn = status === 'authenticated'
 
   const handleSession = () => {
     if (isSignedIn) {
       logout()
     } else {
-      login()
+      setOpenModal(true)
     }
   }
 
   return (
     <>
+      <ModalLogin open={openModal} setOpen={setOpenModal} />
       <div className="bg-slate-50 lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-112 lg:items-start lg:overflow-y-auto xl:w-120">
         <div className="hidden lg:sticky lg:top-0 lg:flex lg:w-16 lg:flex-none lg:items-center lg:whitespace-nowrap lg:py-12 lg:text-sm lg:leading-7 lg:[writing-mode:vertical-rl]">
           <span className="font-mono text-slate-500">Dirigido por:</span>
