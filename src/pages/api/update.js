@@ -1,13 +1,7 @@
-import { authOptions } from '../../pages/api/auth/[...nextauth]'
 import { db } from '../../services/firebase/server'
 import { getServerSession } from 'next-auth'
 
 export default async function handler(req, res) {
-  const session = await getServerSession(req, res, authOptions)
-  if (!session) {
-    res.status(401).send('Unauthorized')
-    return
-  }
   if (req.method !== 'POST') {
     res.status(405).json({
       message: 'Method not allowed',
