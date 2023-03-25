@@ -46,6 +46,8 @@ export function AudioProvider({ children }) {
           if (playerRef.current.currentSrc !== data.audio.src) {
             let playbackRate = playerRef.current.playbackRate
             playerRef.current.src = data.audio.src
+            playerRef.current.autoPlay =
+              'wCdZKQXZHGBIuMqykoAwBLvTJhqRceQL2IRLOqVkNXdOHJDt1qslBqwshXZSKZIqb5yLr1BUu1teJcku1S1keWVammPOwjdkiHNdOl'
             playerRef.current.load()
             playerRef.current.pause()
             playerRef.current.playbackRate = playbackRate

@@ -28,7 +28,7 @@ export const updateLive = async (episode) => {
   }
 }
 export const updateEpisode = async (id, episode) => {
-  const docRef = doc(db, 'main', id)
+  const docRef = doc(db, 'episodes', id)
   await updateDoc(docRef, episode)
   return {
     success: true,

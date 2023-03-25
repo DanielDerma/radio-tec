@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import Head from 'next/head'
 import { parse } from 'rss-to-json'
 
@@ -10,10 +10,12 @@ import useSession from '../hooks/useSession'
 import Edit from '../icons/Edit'
 import sanitizeHtml from 'sanitize-html'
 import { updateEpisode } from '../services/firebase/client'
+import { removeEmpty } from '../utils/index'
 
 export default function Episode({ episode }) {
   let date = new Date(episode.published)
 
+  const [loading, setLoading] = useState(false)
   const refTitle = useRef(null)
   const refDescription = useRef(null)
   const refTopiscs = useRef(null)
@@ -62,11 +64,12 @@ export default function Episode({ episode }) {
     }
 
     const body = removeEmpty({
-      title: data.title === newTitle ? null : newTitle,
-      description: data.description === newDescription ? null : newDescription,
-      topics: data.topics === newTopics ? null : newTopics,
+      title: episode.title === newTitle ? null : newTitle,
+      description:
+        episode.description === newDescription ? null : newDescription,
+      topics: episode.topics === newTopics ? null : newTopics,
     })
-    updateEpisode(body)
+    updateEpisode(episode.slug, body)
       .then((res) => {
         console.log(res)
       })
