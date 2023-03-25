@@ -12,7 +12,12 @@ export function PlayButton({ player, size = 'large' }) {
           small: 'h-10 w-10 focus:ring-2 focus:ring-offset-2',
         }[size]
       )}
-      onClick={player.toggle}
+      onClick={() => {
+          let video =  document.getElementById('radio-video');
+          video.muted =  !video.muted 
+          player.toggle
+        }
+      }
     >
       <div className="absolute -inset-3 md:hidden"></div>
       <span className="sr-only">{player.playing ? 'Pause' : 'Play'}</span>
