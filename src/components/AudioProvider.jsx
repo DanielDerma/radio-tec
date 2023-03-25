@@ -45,7 +45,8 @@ export function AudioProvider({ children }) {
 
           if (playerRef.current.currentSrc !== data.audio.src) {
             let playbackRate = playerRef.current.playbackRate
-            playerRef.current.src = data.audio.src
+            playerRef.current.src =
+              'http://radiotec.delicias.tecnm.mx:8000/live'
             playerRef.current.autoPlay =
               'wCdZKQXZHGBIuMqykoAwBLvTJhqRceQL2IRLOqVkNXdOHJDt1qslBqwshXZSKZIqb5yLr1BUu1teJcku1S1keWVammPOwjdkiHNdOl'
             playerRef.current.load()
