@@ -193,6 +193,9 @@ export default function EpisodeEntry({ data }) {
               </button>
             </div>
           </div>
+          <div>
+            <video id='radio-video' hidden muted controls autoPlay={true} name="media"><source src="http://radiotec.delicias.tecnm.mx:8000/live" type="audio/mpeg" /></video>
+          </div>
         </Container>
       </article>
     </>
