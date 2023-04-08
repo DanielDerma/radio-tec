@@ -1,162 +1,209 @@
 import Head from 'next/head'
-import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
+import sanitizeHtml from 'sanitize-html'
 import { useAudioPlayer } from '../components/AudioProvider'
 import { Container } from '../components/Container'
+import { PlayButton } from '../components/player/PlayButton'
+import useSession from '../hooks/useSession'
+import Edit from '../icons/Edit'
+import { updateLive } from '../services/firebase/client'
+import { removeEmpty } from '../utils/index'
 
-export default function Home({ episodes, live }) {
+export default function EpisodeEntry({ data }) {
+  const [date, setDate] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setDate(new Date())
+  }, [])
+
+  const { status } = useSession()
+  const isSignedIn = status === 'authenticated'
+  console.log(data)
+
+  const refTitle = useRef(null)
+  const refDescription = useRef(null)
+  const refTopiscs = useRef(null)
+
+  let audioPlayerData = useMemo(
+    () => ({
+      title: 'Mi titulo',
+      audio: {
+        src: 'https://their-side-feed.vercel.app/episode-005.mp3',
+        type: 'audio/mpeg',
+      },
+      link: `/1`,
+    }),
+    [] // eslint-disable-line react-hooks/exhaustive-deps
+  )
+  let player = useAudioPlayer(audioPlayerData)
+
+  const handleEdit = (ref) => {
+    ref.current.contentEditable = true
+    const range = document.createRange()
+    range.selectNodeContents(ref.current)
+    const selection = window.getSelection()
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+
+  const handlerBlur = (ref) => {
+    ref.current.contentEditable = false
+    handleSave()
+  }
+
+  const handleSave = () => {
+    setLoading(true)
+    const isTitleEmpty = refTopiscs.current.innerHTML === ''
+    const newTitle = refTitle.current.textContent
+    const newDescription = refDescription.current.textContent
+    const newTopics = isTitleEmpty
+      ? '<li><br></li>'
+      : refTopiscs.current.innerHTML
+
+    if (isTitleEmpty) {
+      refTopiscs.current.innerHTML = '<li><br></li>'
+    }
+
+    const body = removeEmpty({
+      title: data.title === newTitle ? null : newTitle,
+      description: data.description === newDescription ? null : newDescription,
+      topics: data.topics === newTopics ? null : newTopics,
+    })
+    updateLive(body)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
+
   return (
     <>
       <Head>
-        <title>Radio TEC Halcones</title>
+        <title>{data.title} - RADIO TEC HALCONES</title>
+        <meta name="description" content={data.description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+
         <meta
-          name="description"
-          content="Conversations with the most tragically misunderstood people of our time."
+          property="og:title"
+          content={`${data.title} - RADIO TEC HALCONES`}
         />
+        <meta
+          property="og:image"
+          content={`https://radio-tec.vercel.app/api/og?title=${data.title}`}
+        />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:site_name"
+          content={`${data.title} - RADIO TEC HALCONES`}
+        />
+
+        {/* generic */}
+        <meta property="og:type" content="website" />
+        <meta property="og:image:type" content="image/jpeg" />
+
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+
+        <meta property="og:url" content="https://radio-tec.vercel.app/" />
+        <meta property="og:description" content={data.description} />
+        <meta property="fb:app_id" content="749045479981007" />
       </Head>
-      <div className="pt-16 pb-12 sm:pb-4 lg:pt-12">
-        {/* <Container>
-          <h2 className="text-2xl font-bold leading-7 text-slate-900">Live</h2>
-        </Container> */}
-
-        <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 lg:border-t lg:border-slate-100">
-          <EpisodeEntry
-            episode={{
-              id: 'live',
-              title: live.title,
-              description: live.description,
-              audio: process.env.NEXT_PUBLIC_LIVE_URL,
-              isLive: true,
-            }}
-          />
-        </div>
-
+      <article
+        className={`py-16 lg:py-36 ${
+          loading ? 'cursor-wait' : 'cursor-default'
+        }`}
+      >
         <Container>
-          <h2 className="text-xl font-bold leading-7 text-slate-900">
-            Transmisiones pasadas
-          </h2>
+          <header className="flex flex-col">
+            <div className="flex items-center gap-6">
+              <PlayButton player={player} size="large" />
+              <div className="flex flex-col">
+                <div className="group relative">
+                  <h1
+                    className="mt-2  text-4xl font-bold text-slate-900"
+                    ref={refTitle}
+                    onBlur={() => handlerBlur(refTitle)}
+                  >
+                    {data.title}
+                  </h1>
+                  <button onClick={() => handleEdit(refTitle)}>
+                    <Edit
+                      className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                        isSignedIn && 'group-hover:block'
+                      }`}
+                    />
+                  </button>
+                </div>
+                <time
+                  dateTime={date && date.toISOString()}
+                  className="-order-1 font-mono text-sm leading-7 text-slate-500"
+                >
+                  {new Intl.DateTimeFormat('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }).format(date)}
+                </time>
+              </div>
+            </div>
+            <div className="group relative">
+              <p
+                className="ml-24 mt-3 text-lg font-medium leading-8 text-slate-700"
+                ref={refDescription}
+                onBlur={() => handlerBlur(refDescription)}
+              >
+                {data.description}
+              </p>
+              <button onClick={() => handleEdit(refDescription)}>
+                <Edit
+                  className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                    isSignedIn && 'group-hover:block'
+                  }`}
+                />
+              </button>
+            </div>
+          </header>
+          <hr className="my-12 border-gray-200" />
+          <div className="prose prose-slate mt-14 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-primary [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200">
+            <div className="">
+              <h2 id="topics" className="">
+                Temas
+              </h2>
+            </div>
+            <div className="group relative">
+              <ul
+                ref={refTopiscs}
+                onBlur={() => handlerBlur(refTopiscs)}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.topics) }}
+              />
+              <button onClick={() => handleEdit(refTopiscs)}>
+                <Edit
+                  className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
+                    isSignedIn && 'group-hover:block'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
         </Container>
-        <div className="divide-y divide-slate-100 sm:mt-4 lg:mt-8 lg:border-t lg:border-slate-100">
-          {episodes.map((episode) => (
-            <EpisodeEntry key={episode.id} episode={episode} />
-          ))}
-        </div>
-      </div>
+      </article>
     </>
   )
 }
 
-function EpisodeEntry({ episode }) {
-  const [date, setDate] = useState('')
-
-  useEffect(() => {
-    setDate(episode.isLive ? new Date() : new Date(episode.published))
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  let audioPlayerData = useMemo(
-    () => ({
-      title: episode.title,
-      audio: {
-        src: episode.audio,
-        type: 'audio/mpeg',
-        isLive: episode.isLive,
-      },
-      link: `/${episode.id}`,
-    }),
-    [episode]
-  )
-  let player = useAudioPlayer(audioPlayerData)
-
-  return (
-    <article
-      aria-labelledby={`episode-${episode.id}-title`}
-      className="py-10 sm:py-12"
-    >
-      <Container>
-        <div className="flex flex-col items-start">
-          <h2
-            id={`episode-${episode.id}-title`}
-            className="mt-2 items-center text-lg font-bold text-slate-900"
-          >
-            <Link href={`/${episode.id}`} className="flex gap-x-4">
-              <p>{episode.title}</p>
-              {episode.isLive && (
-                <div className="flex items-center gap-x-1 rounded-md border">
-                  <div className="ml-1 h-3  w-3 animate-pulse rounded-full bg-red-400" />
-                  <p className="mr-1 text-sm">LIVE</p>
-                </div>
-              )}
-            </Link>
-          </h2>
-          <time
-            dateTime={date ? date : ''}
-            className="-order-1 font-mono text-sm leading-7 text-slate-500"
-          >
-            {new Intl.DateTimeFormat('es-ES', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }).format(date)}
-          </time>
-          <p className="mt-1 text-base leading-7 text-slate-700">
-            {episode.description}
-          </p>
-          <div className="mt-4 flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => player.toggle()}
-              className="flex items-center text-sm font-bold leading-6 text-primary hover:text-primaryHover active:text-primaryActive"
-            >
-              <span className="sr-only">
-                {player.playing ? 'Pause' : 'Play'}
-                episode {episode.title}
-              </span>
-              <svg
-                className="h-2.5 w-2.5 fill-current"
-                viewBox="0 0 10 10"
-                fill="none"
-                aria-hidden="true"
-              >
-                {player.playing ? (
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M1.496 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5H2.68a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H1.496Zm5.82 0a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5H8.5a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5H7.316Z"
-                  />
-                ) : (
-                  <path d="M8.25 4.567a.5.5 0 0 1 0 .866l-7.5 4.33A.5.5 0 0 1 0 9.33V.67A.5.5 0 0 1 .75.237l7.5 4.33Z" />
-                )}
-              </svg>
-
-              <span className="ml-3" aria-hidden="true">
-                Escuchar
-              </span>
-            </button>
-            <span
-              aria-hidden="true"
-              className="text-sm font-bold text-slate-400"
-            >
-              /
-            </span>
-            <Link
-              href={`/${episode.id}`}
-              className="flex items-center text-sm font-bold leading-6 text-primary hover:text-primaryHover active:text-primaryActive"
-            >
-              Mostrar notas
-            </Link>
-          </div>
-        </div>
-      </Container>
-    </article>
-  )
-}
-
 export async function getServerSideProps() {
-  const dataJson = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/feed`)
-  const { episodes, live } = await dataJson.json()
+  const liveJson = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/live`)
+  const data = await liveJson.json()
 
-  if (!episodes || !live) {
+  if (!data) {
     return {
       notFound: true,
     }
@@ -164,14 +211,10 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      episodes: episodes.map((episode) => ({
-        ...episode,
-        audio: `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/audio/${episode.slug}.mp3`,
-        published:
-          episode.published._seconds * 1000 +
-          episode.published._nanoseconds / 1000000,
-      })),
-      live,
+      data: {
+        ...data,
+        audio: process.env.NEXT_PUBLIC_LIVE_URL,
+      },
     },
   }
 }

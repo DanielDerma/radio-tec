@@ -28,9 +28,9 @@ export default function EpisodeEntry({ data }) {
 
   let audioPlayerData = useMemo(
     () => ({
-      title: data.title,
+      title: "Mi titulo",
       audio: {
-        src: data.audio,
+        src: "www.google.com",
         type: 'audio/mpeg',
       },
       link: `/1`,
