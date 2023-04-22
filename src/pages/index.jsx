@@ -7,20 +7,24 @@ import { Container } from '../components/Container'
 import { PlayButton } from '../components/player/PlayButton'
 import useSession from '../hooks/useSession'
 import Edit from '../icons/Edit'
-import { updateLive } from '../services/firebase/client'
+import { getLive, updateLive } from '../services/firebase/client'
 import { removeEmpty } from '../utils/index'
 
-export default function EpisodeEntry({ data }) {
+export default function EpisodeEntry() {
   const [date, setDate] = useState('')
   const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(null)
 
   useEffect(() => {
     setDate(new Date())
+    getLive().then((elem) => {
+      setData(elem)
+    })
   }, [])
 
   const { status } = useSession()
   const isSignedIn = status === 'authenticated'
-  console.log(data)
+  console.log(isSignedIn, status)
 
   const refTitle = useRef(null)
   const refDescription = useRef(null)
@@ -28,7 +32,7 @@ export default function EpisodeEntry({ data }) {
 
   let audioPlayerData = useMemo(
     () => ({
-      title: 'Mi titulo',
+      title: 'Radio Tec Halcones',
       audio: {
         src: 'https://their-side-feed.vercel.app/episode-005.mp3',
         type: 'audio/mpeg',
@@ -86,35 +90,13 @@ export default function EpisodeEntry({ data }) {
   return (
     <>
       <Head>
-        <title>{data.title} - RADIO TEC HALCONES</title>
-        <meta name="description" content={data.description} />
+        <title>RADIO TEC HALCONES</title>
+        <meta
+          name="description"
+          content="Escucha, aprende y descubre con Radio Tec Halcones."
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-
-        <meta
-          property="og:title"
-          content={`${data.title} - RADIO TEC HALCONES`}
-        />
-        <meta
-          property="og:image"
-          content={`https://radio-tec.vercel.app/api/og?title=${data.title}`}
-        />
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:site_name"
-          content={`${data.title} - RADIO TEC HALCONES`}
-        />
-
-        {/* generic */}
-        <meta property="og:type" content="website" />
-        <meta property="og:image:type" content="image/jpeg" />
-
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-
-        <meta property="og:url" content="https://radio-tec.vercel.app/" />
-        <meta property="og:description" content={data.description} />
-        <meta property="fb:app_id" content="749045479981007" />
       </Head>
       <article
         className={`py-16 lg:py-36 ${
@@ -128,11 +110,11 @@ export default function EpisodeEntry({ data }) {
               <div className="flex flex-col">
                 <div className="group relative">
                   <h1
-                    className="mt-2  text-4xl font-bold text-slate-900"
+                    className="mt-2 text-4xl font-bold text-slate-900"
                     ref={refTitle}
                     onBlur={() => handlerBlur(refTitle)}
                   >
-                    {data.title}
+                    {data?.title}
                   </h1>
                   <button onClick={() => handleEdit(refTitle)}>
                     <Edit
@@ -160,7 +142,7 @@ export default function EpisodeEntry({ data }) {
                 ref={refDescription}
                 onBlur={() => handlerBlur(refDescription)}
               >
-                {data.description}
+                {data?.description}
               </p>
               <button onClick={() => handleEdit(refDescription)}>
                 <Edit
@@ -182,12 +164,12 @@ export default function EpisodeEntry({ data }) {
               <ul
                 ref={refTopiscs}
                 onBlur={() => handlerBlur(refTopiscs)}
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(data.topics) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(data?.topics) }}
               />
               <button onClick={() => handleEdit(refTopiscs)}>
                 <Edit
                   className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
-                    isSignedIn && 'group-hover:block'
+                    !isSignedIn && 'group-hover:block'
                   }`}
                 />
               </button>
@@ -197,24 +179,4 @@ export default function EpisodeEntry({ data }) {
       </article>
     </>
   )
-}
-
-export async function getServerSideProps() {
-  const liveJson = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/live`)
-  const data = await liveJson.json()
-
-  if (!data) {
-    return {
-      notFound: true,
-    }
-  }
-
-  return {
-    props: {
-      data: {
-        ...data,
-        audio: process.env.NEXT_PUBLIC_LIVE_URL,
-      },
-    },
-  }
 }

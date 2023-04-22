@@ -20,9 +20,10 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(auth, email, password).catch(() => {
+      alert('Invalid')
+    })
   }
-
   function logout() {
     return signOut(auth)
   }
