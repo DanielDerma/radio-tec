@@ -4,12 +4,12 @@ import { doc, getFirestore, updateDoc, getDoc } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: 'AIzaSyAQwy1UhPjxXr40n9Xd45H9vJe9T6gvCmM',
+  authDomain: 'radio-tec-dev.firebaseapp.com',
+  projectId: 'radio-tec-dev',
+  storageBucket: 'radio-tec-dev.appspot.com',
+  messagingSenderId: '858856565054',
+  appId: '1:858856565054:web:78afc8324bc2f14e04246f',
 }
 
 const app = getApps.length > 0 ? getApp() : initializeApp(firebaseConfig)
@@ -28,8 +28,8 @@ export const updateLive = async (episode) => {
   }
 }
 
-export const getLive = async (episode) => {
+export const getLive = async () => {
   const docRef = doc(db, 'main', 'live')
-  const a = await getDoc(docRef, episode)
+  const a = await getDoc(docRef)
   return a.data()
 }

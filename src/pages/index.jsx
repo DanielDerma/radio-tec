@@ -13,6 +13,8 @@ import { removeEmpty } from '../utils/index'
 export default function EpisodeEntry() {
   const [date, setDate] = useState('')
   const [loading, setLoading] = useState(false)
+  const { status } = useSession()
+  const isSignedIn = status === 'authenticated'
   const [data, setData] = useState(null)
 
   useEffect(() => {
@@ -21,10 +23,6 @@ export default function EpisodeEntry() {
       setData(elem)
     })
   }, [])
-
-  const { status } = useSession()
-  const isSignedIn = status === 'authenticated'
-  console.log(isSignedIn, status)
 
   const refTitle = useRef(null)
   const refDescription = useRef(null)
@@ -104,9 +102,26 @@ export default function EpisodeEntry() {
         }`}
       >
         <Container>
+          {data?.liveMP4 && (
+            <>
+              <header className="flex flex-col">
+                <div className="relative h-0 pb-[300px]">
+                  <iframe
+                    width="100%"
+                    height="400"
+                    src={`https://www.youtube.com/embed/${data?.liveMP4}`}
+                    title="LIVE RADIO TEC HALCONES"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </header>
+              <hr className="my-24 border-gray-200" />
+            </>
+          )}
           <header className="flex flex-col">
             <div className="flex items-center gap-6">
-              <PlayButton player={player} size="large" />
+              <PlayButton videoId={data?.liveMP3} />
               <div className="flex flex-col">
                 <div className="group relative">
                   <h1
@@ -157,7 +172,7 @@ export default function EpisodeEntry() {
           <div className="prose prose-slate mt-14 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-primary [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200">
             <div className="">
               <h2 id="topics" className="">
-                Temas
+                Itinerario
               </h2>
             </div>
             <div className="group relative">
@@ -169,7 +184,7 @@ export default function EpisodeEntry() {
               <button onClick={() => handleEdit(refTopiscs)}>
                 <Edit
                   className={`absolute -right-4 -top-4 hidden h-6 w-6 cursor-pointer ${
-                    !isSignedIn && 'group-hover:block'
+                    isSignedIn && 'group-hover:block'
                   }`}
                 />
               </button>

@@ -1,10 +1,12 @@
 import clsx from 'clsx'
 import Image from 'next/legacy/image'
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 
 import { AudioPlayer } from './player/AudioPlayer'
 import useSession from '../hooks/useSession'
 import posterImage from 'public/tec.png'
+import { getLive, updateLive } from '../services/firebase/client'
+import { removeEmpty } from '../utils/index'
 
 import ModalLogin from './ModalLogin'
 
@@ -114,7 +116,18 @@ function AboutSection(props) {
 export function Layout({ children }) {
   const { status, login, logout } = useSession()
   const [openModal, setOpenModal] = useState(false)
+  const mp3 = useRef(null)
+  const mp4 = useRef(null)
   const isSignedIn = status === 'authenticated'
+
+  useEffect(() => {
+    if (isSignedIn) {
+      getLive().then((elem) => {
+        mp3.current.value = elem.liveMP3
+        mp4.current.value = elem.liveMP4
+      })
+    }
+  }, [isSignedIn])
 
   const handleSession = () => {
     if (isSignedIn) {
@@ -122,6 +135,23 @@ export function Layout({ children }) {
     } else {
       setOpenModal(true)
     }
+  }
+
+  const handleSubmit = () => {
+    const mp3Value = mp3.current.value
+    const mp4Value = mp4.current.value
+
+    const body = {
+      liveMP3: mp3Value,
+      liveMP4: mp4Value,
+    }
+    updateLive(body)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   return (
@@ -195,6 +225,53 @@ export function Layout({ children }) {
               Escucha, aprende y descubre con Radio Tec Halcones.
             </p>
           </div>
+          {isSignedIn ? (
+            <div className="mt-10 text-center lg:mt-12 lg:text-left">
+              <div>
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Codigo del Radio
+                </label>
+                <div className="relative mt-2 rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="price"
+                    ref={mp3}
+                    id="price"
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    placeholder="youtube.com/watch?v=CODIGO"
+                  />
+                </div>
+              </div>
+              <div className="mt-10">
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Codigo del video(no codigo, no video)
+                </label>
+                <div className="relative mt-2 rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="price"
+                    ref={mp4}
+                    id="price"
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    placeholder="youtube.com/watch?v=CODIGO"
+                  />
+                </div>
+              </div>
+              <button
+                onClick={handleSubmit}
+                className="mt-10 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primaryHover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primaryActive"
+              >
+                Guardar
+              </button>
+            </div>
+          ) : null}
+
           <AboutSection className="mt-12 hidden lg:block" />
           <section className="mt-10 lg:mt-12">
             <h2 className="sr-only flex items-center font-mono text-sm font-medium leading-7 text-slate-900 lg:not-sr-only">
