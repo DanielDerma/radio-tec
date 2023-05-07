@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install dependencies
+        working-directory: ./src/utils
         run: npm install
 
       - name: Fetch videos
@@ -26,4 +27,4 @@ jobs:
 
       - name: Update listVideos.js
         run: |
-          node src/utils/updateList.js
+          node updateList.js
