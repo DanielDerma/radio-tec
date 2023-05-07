@@ -1,0 +1,29 @@
+name: Fetch YouTube Videos
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # run every 5 minutes
+
+jobs:
+  fetch_videos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Fetch videos
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
+        run: |
+          curl -X GET \
+            "https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=20" \
+            -H "Accept: application/json" \
+            > videos.json
+
+      - name: Update listVideos.js
+        run: |
+          node src/utils/updateList.js

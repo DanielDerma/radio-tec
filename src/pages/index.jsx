@@ -1,15 +1,14 @@
 import Head from 'next/head'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
+import Link from 'next/link'
 import sanitizeHtml from 'sanitize-html'
-import { useAudioPlayer } from '../components/AudioProvider'
 import { Container } from '../components/Container'
 import { PlayButton } from '../components/player/PlayButton'
 import useSession from '../hooks/useSession'
 import Edit from '../icons/Edit'
 import { getLive, updateLive } from '../services/firebase/client'
 import { removeEmpty } from '../utils/index'
-import Link from 'next/link'
 
 export default function EpisodeEntry() {
   const [date, setDate] = useState('')
