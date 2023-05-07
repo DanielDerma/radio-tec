@@ -1,12 +1,7 @@
-import {
-  isSignInWithEmailLink,
-  signInWithEmailAndPassword,
-  signInWithEmailLink,
-  signOut,
-} from 'firebase/auth'
-import { useRouter } from 'next/router'
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
+import Modal from '../components/Modal'
 import { auth } from '../services/firebase/client'
 
 export const AuthContext = React.createContext()

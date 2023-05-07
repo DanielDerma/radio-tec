@@ -10,12 +10,18 @@ export function PlayButton({ videoId }) {
     const script = document.createElement('script')
     script.src = 'https://www.youtube.com/iframe_api'
     document.body.appendChild(script)
-
     // Initialize player when script is loaded
     script.onload = () => {
       window.onYouTubeIframeAPIReady = () => {
         const player = new window.YT.Player('youtube-player', {
           videoId,
+          playerVars: {
+            controls: 0,
+            disablekb: 1,
+            modestbranding: 1,
+            rel: 0,
+            showinfo: 0,
+          },
           events: {
             onReady: () => {
               setPlayer(player)

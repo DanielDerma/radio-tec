@@ -124,7 +124,6 @@ export function Layout({ children }) {
     if (isSignedIn) {
       getLive().then((elem) => {
         mp3.current.value = elem.liveMP3
-        mp4.current.value = elem.liveMP4
       })
     }
   }, [isSignedIn])
@@ -139,11 +138,11 @@ export function Layout({ children }) {
 
   const handleSubmit = () => {
     const mp3Value = mp3.current.value
-    const mp4Value = mp4.current.value
+    // const mp4Value = mp4.current.value
 
     const body = {
       liveMP3: mp3Value,
-      liveMP4: mp4Value,
+      // liveMP4: mp4Value,
     }
     updateLive(body)
       .then((res) => {
@@ -151,6 +150,9 @@ export function Layout({ children }) {
       })
       .catch((err) => {
         console.log(err)
+      })
+      .finally(() => {
+        window.location.reload()
       })
   }
 
@@ -239,24 +241,6 @@ export function Layout({ children }) {
                     type="text"
                     name="price"
                     ref={mp3}
-                    id="price"
-                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    placeholder="youtube.com/watch?v=CODIGO"
-                  />
-                </div>
-              </div>
-              <div className="mt-10">
-                <label
-                  htmlFor="price"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Codigo del video(no codigo, no video)
-                </label>
-                <div className="relative mt-2 rounded-md shadow-sm">
-                  <input
-                    type="text"
-                    name="price"
-                    ref={mp4}
                     id="price"
                     className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     placeholder="youtube.com/watch?v=CODIGO"

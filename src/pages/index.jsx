@@ -9,6 +9,7 @@ import useSession from '../hooks/useSession'
 import Edit from '../icons/Edit'
 import { getLive, updateLive } from '../services/firebase/client'
 import { removeEmpty } from '../utils/index'
+import Link from 'next/link'
 
 export default function EpisodeEntry() {
   const [date, setDate] = useState('')
@@ -27,19 +28,6 @@ export default function EpisodeEntry() {
   const refTitle = useRef(null)
   const refDescription = useRef(null)
   const refTopiscs = useRef(null)
-
-  let audioPlayerData = useMemo(
-    () => ({
-      title: 'Radio Tec Halcones',
-      audio: {
-        src: 'https://their-side-feed.vercel.app/episode-005.mp3',
-        type: 'audio/mpeg',
-      },
-      link: `/1`,
-    }),
-    [] // eslint-disable-line react-hooks/exhaustive-deps
-  )
-  let player = useAudioPlayer(audioPlayerData)
 
   const handleEdit = (ref) => {
     ref.current.contentEditable = true
@@ -97,28 +85,20 @@ export default function EpisodeEntry() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <article
-        className={`py-16 lg:py-36 ${
+        className={`py-16 lg:pb-36 ${
           loading ? 'cursor-wait' : 'cursor-default'
         }`}
       >
         <Container>
-          {data?.liveMP4 && (
-            <>
-              <header className="flex flex-col">
-                <div className="relative h-0 pb-[300px]">
-                  <iframe
-                    width="100%"
-                    height="400"
-                    src={`https://www.youtube.com/embed/${data?.liveMP4}`}
-                    title="LIVE RADIO TEC HALCONES"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              </header>
-              <hr className="my-24 border-gray-200" />
-            </>
-          )}
+          <div className="flex justify-end">
+            <Link
+              href="/streams"
+              className="mt-2 mb-4 hidden text-sm font-bold leading-6 text-primary underline hover:text-primaryHover active:text-primaryActive lg:inline-block"
+            >
+              Mostrar transmisiónes anteriores.
+            </Link>
+          </div>
+          <hr className="mb-24 border-gray-200" />
           <header className="flex flex-col">
             <div className="flex items-center gap-6">
               <PlayButton videoId={data?.liveMP3} />
