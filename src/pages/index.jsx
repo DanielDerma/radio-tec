@@ -7,7 +7,7 @@ import { Container } from '../components/Container'
 import { PlayButton } from '../components/player/PlayButton'
 import useSession from '../hooks/useSession'
 import Edit from '../icons/Edit'
-import { getLive, updateLive } from '../services/firebase/client'
+import { getLive, setVideos, updateLive } from '../services/firebase/client'
 import { removeEmpty } from '../utils/index'
 
 export default function EpisodeEntry() {
@@ -92,7 +92,7 @@ export default function EpisodeEntry() {
           <div className="flex justify-end">
             <Link
               href="/streams"
-              className="mt-2 mb-4 hidden text-sm font-bold leading-6 text-primary underline hover:text-primaryHover active:text-primaryActive lg:inline-block"
+              className="mb-4 mt-2 text-sm font-bold leading-6 text-primary underline hover:text-primaryHover active:text-primaryActive lg:inline-block"
             >
               Mostrar transmisiónes anteriores.
             </Link>
@@ -148,7 +148,7 @@ export default function EpisodeEntry() {
             </div>
           </header>
           <hr className="my-12 border-gray-200" />
-          <div className="prose prose-slate mt-14 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-primary [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200">
+          <div className="prose prose-slate mt-14 [&>div>h2:nth-of-type(3n)]:before:bg-violet-200 [&>div>h2:nth-of-type(3n+2)]:before:bg-indigo-200 [&>div>h2]:mt-12 [&>div>h2]:flex [&>div>h2]:items-center [&>div>h2]:font-mono [&>div>h2]:text-sm [&>div>h2]:font-medium [&>div>h2]:leading-7 [&>div>h2]:text-slate-900 [&>div>h2]:before:mr-3 [&>div>h2]:before:h-3 [&>div>h2]:before:w-1.5 [&>div>h2]:before:rounded-r-full [&>div>h2]:before:bg-primary [&>div>ul]:mt-6 [&>div>ul]:list-['\2013\20'] [&>div>ul]:pl-5">
             <div className="">
               <h2 id="topics" className="">
                 Itinerario

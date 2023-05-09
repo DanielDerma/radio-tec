@@ -1,6 +1,12 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { doc, getFirestore, updateDoc, getDoc } from 'firebase/firestore'
+import {
+  doc,
+  getFirestore,
+  updateDoc,
+  getDoc,
+  setDoc,
+} from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
@@ -22,7 +28,31 @@ export { app, db, storage, auth }
 
 export const updateLive = async (episode) => {
   const docRef = doc(db, 'main', 'live')
-  const a = await updateDoc(docRef, episode)
+  await updateDoc(docRef, episode)
+  return {
+    success: true,
+  }
+}
+
+async function updateOrInsertDoc(db, collectionName, docId, data) {
+  const docRef = doc(db, collectionName, docId)
+  try {
+    await updateDoc(docRef, data)
+  } catch (error) {
+    if (error.code === 'not-found') {
+      await setDoc(docRef, data)
+    } else {
+      throw error
+    }
+  }
+}
+
+export const setVideos = async (videos) => {
+  const promises = videos.map((video) => {
+    const docRef = doc(db, 'videos', video.id)
+    return updateOrInsertDoc(db, 'videos', video.id, video)
+  })
+  await Promise.all(promises)
   return {
     success: true,
   }

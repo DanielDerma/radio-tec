@@ -11,8 +11,10 @@
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
     "@headlessui/react": "^1.7.13",
+    "@heroicons/react": "^2.0.17",
     "@tailwindcss/line-clamp": "^0.4.0",
     "@tailwindcss/typography": "^0.5.2",
+    "@vercel/kv": "^0.1.2",
     "autoprefixer": "^10.4.7",
     "clsx": "^1.1.1",
     "express-rate-limit": "^6.7.0",
